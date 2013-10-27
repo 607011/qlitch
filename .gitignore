@@ -1,0 +1,8 @@
+*.opensdf
+*.sdf
+*.suo
+*.filters
+*.vcxproj.user
+*.jpg
+Debug/*
+Release/*
