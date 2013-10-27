@@ -83,32 +83,30 @@ void glitch(void) {
   HANDLE hFile = CreateFile(outfile, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if (hFile == INVALID_HANDLE_VALUE) {
     printf(TEXT("hFile is NULL\n"));
-    printf(TEXT("Target file is %s\n"),
-             outfile);
+    printf(TEXT("Target file is %s\n"), outfile);
     exit(4);
   }
-  DWORD dwFileSize = GetFileSize(hFile,  NULL);
-  SYSTEM_INFO SysInfo;  // system information; used to get granularity
+  DWORD dwFileSize = GetFileSize(hFile, NULL);
+  SYSTEM_INFO SysInfo;
   GetSystemInfo(&SysInfo);
   DWORD dwSysGran = SysInfo.dwAllocationGranularity;
   DWORD dwFirstPos = (DWORD)(1e-2 * dwFileSize * percent);
-  DWORD dwFileMapStart = (dwFirstPos / dwSysGran) * dwSysGran;
-  DWORD dwMapViewSize = dwSysGran;
-  DWORD wFileMapSize = dwFileSize;
   HANDLE hMapFile = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, 0, NULL);
   if (hMapFile == NULL) {
     printf(TEXT("hMapFile is NULL, last error: %d\n"), GetLastError() );
     exit(2);
   }
-  printf("in between %lu and %lu\n", dwFirstPos, dwFileSize); 
+  if (verbose > 0)
+    printf("randomly glitching in between %lu and %lu\n", dwFirstPos, dwFileSize);
   for (int i = 0; i < iterations; ++i) {
     DWORD dwPos = (DWORD) random(dwFirstPos, dwFileSize);
+    DWORD dwFileMapStart = (dwPos / dwSysGran) * dwSysGran;
     LPVOID lpMapAddress = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, dwFileMapStart, 0);
     if (lpMapAddress == NULL) {
       printf(TEXT("lpMapAddress is NULL, last error: %d\n"), GetLastError());
       exit(3);
     }
-    BYTE *b = (BYTE*)lpMapAddress + dwPos;
+    BYTE *b = (BYTE*)lpMapAddress + dwPos % dwSysGran;
     INT bit = rand() % 8;
     BYTE oldByte = *b;
     BYTE newByte = oldByte;
@@ -123,7 +121,8 @@ void glitch(void) {
       break;
     }
     *b = newByte;
-    printf("glitching at position %lu:%d (%02xh->%02xh)\n", dwPos, bit, (UINT)oldByte, (UINT)newByte);
+    if (verbose > 0)
+      printf("glitching @%11lu[%d]: %02xh->%02xh\n", dwPos, bit, (UINT)oldByte, (UINT)newByte);
     UnmapViewOfFile(lpMapAddress);
   }
   CloseHandle(hMapFile);
@@ -144,7 +143,7 @@ void glitch(void) {
   long int n = (tv.tv_sec ^ tv.tv_usec) ^ getpid();
   srand(n);
   long firstPos = (long)(1e-2 * sz * percent);
-  printf("in between %lu and %lu\n\r", firstPos, sz); 
+  printf("in between %lu and %lu\n\r", firstPos, sz);
   for (int i = 0; i < iterations; ++i) {
     const long pos = (long) random(firstPos, sz);
     const int bit = rand() % 8;
@@ -232,7 +231,8 @@ int main(int argc, char* argv[]) {
     usage();
     return EXIT_FAILURE;
   }
-  printf("%s -> %s\n", infile, outfile); 
+  if (verbose > 1)
+    printf("%s -> %s\n", infile, outfile); 
   glitch();
   return EXIT_SUCCESS;
 }
