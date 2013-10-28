@@ -36,7 +36,7 @@ enum _long_options {
 };
 
 enum ALGORITHMS {
-  ALGORITHM_ONE, ALGORITHM_NULL, ALGORITHM_XOR
+  ALGORITHM_0, ALGORITHM_1, ALGORITHM_XOR
 };
 
 static struct option long_options[] = {
@@ -59,7 +59,7 @@ static bool quiet = false;
 static char *infile = "original.jpg";
 static char *outfile = "glitched.jpg";
 static double percent = 10;
-static ALGORITHMS algorithm = ALGORITHM_ONE;
+static ALGORITHMS algorithm = ALGORITHM_1;
 static unsigned int BUFFSIZE = 1024;
 
 template <typename T> inline T MIN(T x, T y) { return (x > y) ? y : x; }
@@ -131,11 +131,11 @@ void glitch(void) {
       fprintf(stderr, TEXT("lpMapAddress is NULL, last error: %d\n"), GetLastError());
       exit(3);
     }
-    BYTE *b = (BYTE*)lpMapAddress + dwPos % dwSysGran;
+    BYTE *b = reinterpret_cast<BYTE*>(lpMapAddress) + dwPos % dwSysGran;
     BYTE oldByte = *b;
     BYTE newByte = oldByte;
+    UINT rn = 0; 
     for (int j = 0; j < amount; ++j) {
-      UINT rn;
       rand_s(&rn);
       int bit = rn % 8;
       switch (algorithm) {
@@ -144,10 +144,10 @@ void glitch(void) {
       case ALGORITHM_XOR:
         newByte ^= (1 << bit);
         break;
-      case ALGORITHM_ONE:
+      case ALGORITHM_0:
         newByte |= (1 << bit);
         break;
-      case ALGORITHM_NULL:
+      case ALGORITHM_1:
         newByte &= ~(1 << bit);
         break;
       }
@@ -231,9 +231,9 @@ int main(int argc, char *argv[]) {
       if (strcmp(optarg, "XOR") == 0)
         algorithm = ALGORITHM_XOR;
       else if (strcmp(optarg, "NULL") == 0)
-        algorithm = ALGORITHM_NULL;
+        algorithm = ALGORITHM_0;
       else if (strcmp(optarg, "ONE") == 0)
-        algorithm = ALGORITHM_ONE;
+        algorithm = ALGORITHM_1;
       break;
     case 'h':
       /* fall-through */
