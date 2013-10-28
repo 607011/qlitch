@@ -5,9 +5,11 @@
 
 #ifndef WIN32
 #include <sys/time.h>
+#define TEXT()
 #endif
 
 #ifdef WIN32
+#define _CRT_RAND_S
 #include <Windows.h>
 #endif
 
@@ -15,6 +17,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
+#include <climits>
+
 #include <getopt.h>
 
 enum _long_options {
@@ -28,7 +32,9 @@ enum _long_options {
   SELECT_ALGORITHM
 };
 
-enum ALGORITHMS { ALGORITHM_OR, ALGORITHM_XOR };
+enum ALGORITHMS {
+  ALGORITHM_OR, ALGORITHM_XOR
+};
 
 static struct option long_options[] = {
   { "help",       no_argument,       0, SELECT_HELP },
@@ -54,6 +60,7 @@ static unsigned int BUFFSIZE = 1024;
 template <typename T> inline T MIN(T x, T y) { return (x > y) ? y : x; }
 template <typename T> inline T MAX(T x, T y) { return (x < y) ? y : x; }
 
+
 static inline bool fuzzyEqual(double x, double y) {
   return fabs(x - y) <= (0.000000000001 * MIN(fabs(x), fabs(y)));
 }
@@ -63,7 +70,20 @@ double random(double x, double y) {
   if (fuzzyEqual(x, y))
     return x;
   double hi = MAX(x, y), lo = MIN(x, y);
+#ifdef WIN32
+  UINT rn;
+  rand_s(&rn);
+  return lo + ((hi - lo) * rn / (UINT_MAX + 1.0));
+#else
   return lo + ((hi - lo) * rand() / (RAND_MAX + 1.0));
+#endif
+}
+
+
+void disclaimer() {
+  printf("glitch - Produce glitch effect in a JPG file.\n"
+    "Copyright (c) 2013 Oliver Lau <oliver@ersatzworld.net>\n"
+    "All rights reserved.\n\n");
 }
 
 
@@ -77,13 +97,13 @@ void glitch(void) {
   srand(GetTickCount());
   BOOL rc = CopyFile(infile, outfile, FALSE);
   if (rc == 0) {
-    printf(TEXT("Copying failed, last error: %d\n"), GetLastError());
+    fprintf(stderr, TEXT("Copying failed, last error: %d\n"), GetLastError());
     exit(1);
   }
   HANDLE hFile = CreateFile(outfile, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if (hFile == INVALID_HANDLE_VALUE) {
-    printf(TEXT("hFile is NULL\n"));
-    printf(TEXT("Target file is %s\n"), outfile);
+    fprintf(stderr, TEXT("hFile is NULL\n"));
+    fprintf(stderr, TEXT("Target file is %s\n"), outfile);
     exit(4);
   }
   DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -93,21 +113,23 @@ void glitch(void) {
   DWORD dwFirstPos = (DWORD)(1e-2 * dwFileSize * percent);
   HANDLE hMapFile = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, 0, NULL);
   if (hMapFile == NULL) {
-    printf(TEXT("hMapFile is NULL, last error: %d\n"), GetLastError() );
+    fprintf(stderr, TEXT("hMapFile is NULL, last error: %d\n"), GetLastError() );
     exit(2);
   }
   if (verbose > 0)
     printf("randomly glitching in between %lu and %lu\n", dwFirstPos, dwFileSize);
   for (int i = 0; i < iterations; ++i) {
-    DWORD dwPos = (DWORD) random(dwFirstPos, dwFileSize);
+    DWORD dwPos = (DWORD)random(dwFirstPos, dwFileSize);
     DWORD dwFileMapStart = (dwPos / dwSysGran) * dwSysGran;
     LPVOID lpMapAddress = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, dwFileMapStart, 0);
     if (lpMapAddress == NULL) {
-      printf(TEXT("lpMapAddress is NULL, last error: %d\n"), GetLastError());
+      fprintf(stderr, TEXT("lpMapAddress is NULL, last error: %d\n"), GetLastError());
       exit(3);
     }
     BYTE *b = (BYTE*)lpMapAddress + dwPos % dwSysGran;
-    INT bit = rand() % 8;
+    UINT rn;
+    rand_s(&rn);
+    INT bit = rn % 8;
     BYTE oldByte = *b;
     BYTE newByte = oldByte;
     switch (algorithm) {
@@ -168,7 +190,10 @@ void glitch(void) {
 }
 #endif
 
-int main(int argc, char* argv[]) {
+
+int main(int argc, char *argv[]) {
+  if (!quiet)
+    disclaimer();
   for (;;) {
     int option_index = 0;
     int c = getopt_long(argc, argv, "i:p:h?vqa:", long_options, &option_index);
