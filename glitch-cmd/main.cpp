@@ -31,11 +31,12 @@ enum _long_options {
   SELECT_ITERATIONS,
   SELECT_QUIET,
   SELECT_VERBOSE,
-  SELECT_ALGORITHM
+  SELECT_ALGORITHM,
+  SELECT_AMOUNT
 };
 
 enum ALGORITHMS {
-  ALGORITHM_OR, ALGORITHM_XOR
+  ALGORITHM_ONE, ALGORITHM_NULL, ALGORITHM_XOR
 };
 
 static struct option long_options[] = {
@@ -43,6 +44,7 @@ static struct option long_options[] = {
   { "percent",    required_argument, 0, SELECT_PERCENT },
   { "iterations", required_argument, 0, SELECT_ITERATIONS },
   { "algorithm",  required_argument, 0, SELECT_ALGORITHM },
+  { "amount",     required_argument, 0, SELECT_AMOUNT },
   { "in",         required_argument, 0, SELECT_IN },
   { "out",        required_argument, 0, SELECT_OUT },
   { "quiet",      no_argument,       0, SELECT_QUIET },
@@ -52,11 +54,12 @@ static struct option long_options[] = {
 
 static int verbose = 0;
 static int iterations = 10;
+static int amount = 1;
 static bool quiet = false;
-static char *infile = NULL;
-static char *outfile = NULL;
+static char *infile = "original.jpg";
+static char *outfile = "glitched.jpg";
 static double percent = 10;
-static ALGORITHMS algorithm = ALGORITHM_XOR;
+static ALGORITHMS algorithm = ALGORITHM_ONE;
 static unsigned int BUFFSIZE = 1024;
 
 template <typename T> inline T MIN(T x, T y) { return (x > y) ? y : x; }
@@ -90,7 +93,7 @@ void disclaimer() {
 
 
 void usage() {
-  printf("Usage: glitch --in original.jpg --out glitched.jpg [--iterations|-i %d] [--percent|-p %lf] [--algorithm|-a XOR|OR]\n\r", iterations, percent);
+  printf("Usage: glitch [--in %s] [--out %s] [--iterations|-i %d] [--amount %d] [--percent|-p %lf] [--algorithm|-a ONE|NULL|XOR|]\n\r", infile, outfile, iterations, amount, percent);
 }
 
 
@@ -129,24 +132,29 @@ void glitch(void) {
       exit(3);
     }
     BYTE *b = (BYTE*)lpMapAddress + dwPos % dwSysGran;
-    UINT rn;
-    rand_s(&rn);
-    INT bit = rn % 8;
     BYTE oldByte = *b;
     BYTE newByte = oldByte;
-    switch (algorithm) {
-    default:
-      // fall-through
-    case ALGORITHM_XOR:
-      newByte ^= (1 << bit);
-      break;
-    case ALGORITHM_OR:
-      newByte |= (1 << bit);
-      break;
+    for (int j = 0; j < amount; ++j) {
+      UINT rn;
+      rand_s(&rn);
+      int bit = rn % 8;
+      switch (algorithm) {
+      default:
+        // fall-through
+      case ALGORITHM_XOR:
+        newByte ^= (1 << bit);
+        break;
+      case ALGORITHM_ONE:
+        newByte |= (1 << bit);
+        break;
+      case ALGORITHM_NULL:
+        newByte &= ~(1 << bit);
+        break;
+      }
+      if (verbose > 0)
+        printf("glitching @%11lu[%d]: %02xh->%02xh\n", dwPos, bit, (UINT)oldByte, (UINT)newByte);
     }
     *b = newByte;
-    if (verbose > 0)
-      printf("glitching @%11lu[%d]: %02xh->%02xh\n", dwPos, bit, (UINT)oldByte, (UINT)newByte);
     UnmapViewOfFile(lpMapAddress);
   }
   CloseHandle(hMapFile);
@@ -194,8 +202,6 @@ void glitch(void) {
 
 
 int main(int argc, char *argv[]) {
-  if (!quiet)
-    disclaimer();
   for (;;) {
     int option_index = 0;
     int c = getopt_long(argc, argv, "i:p:h?vqa:", long_options, &option_index);
@@ -213,14 +219,21 @@ int main(int argc, char *argv[]) {
     case SELECT_ITERATIONS:
       iterations = atoi(optarg);
       break;
+    case SELECT_AMOUNT:
+      amount = atoi(optarg);
+      break;
     case 'p':
     case SELECT_PERCENT:
       percent = atof(optarg);
       break;
     case 'a':
     case SELECT_ALGORITHM:
-      if (strcmp(optarg, "OR") == 0)
-        algorithm = ALGORITHM_OR;
+      if (strcmp(optarg, "XOR") == 0)
+        algorithm = ALGORITHM_XOR;
+      else if (strcmp(optarg, "NULL") == 0)
+        algorithm = ALGORITHM_NULL;
+      else if (strcmp(optarg, "ONE") == 0)
+        algorithm = ALGORITHM_ONE;
       break;
     case 'h':
       /* fall-through */
@@ -246,11 +259,17 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
+  if (!quiet)
+    disclaimer();
   if (infile == NULL || outfile == NULL) {
     usage();
     return EXIT_FAILURE;
   }
   if (percent >= 100) {
+    usage();
+    return EXIT_FAILURE;
+  }
+  if (amount < 1 || amount > 7) {
     usage();
     return EXIT_FAILURE;
   }
