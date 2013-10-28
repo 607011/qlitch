@@ -4,8 +4,11 @@
 /// All rights reserved.
 
 #ifndef WIN32
-#include <sys/time.h>
 #define TEXT()
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
 #endif
 
 #ifdef WIN32
@@ -157,7 +160,7 @@ void glitch(void) {
   long sz = ftell(in);
   fseek(in, 0L, SEEK_SET);
   unsigned char *buf = (unsigned char*) malloc(sz);
-  fread(buf, 1, sz, in);
+  size_t bytesread = fread(buf, 1, sz, in);
   fclose(in);
   FILE *out = fopen(outfile, "wb+");
   struct timeval tv;
