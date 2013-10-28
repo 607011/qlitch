@@ -1,8 +1,8 @@
-*.opensdf
-*.sdf
-*.suo
-*.filters
-*.vcxproj.user
-*.jpg
-Debug/*
-Release/*
+glitch-cmd/*.opensdf
+glitch-cmd/*.sdf
+glitch-cmd/*.suo
+glitch-cmd/*.filters
+glitch-cmd/*.vcxproj.user
+glitch-cmd/Debug/*
+glitch-cmd/Release/*
+qlitch/*.pro.user
