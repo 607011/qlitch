@@ -9,6 +9,7 @@
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
+#include <QMouseEvent>
 #include <QImage>
 
 class ImageWidget : public QWidget
@@ -21,6 +22,7 @@ public:
 
 signals:
     void imageDropped(const QImage&);
+    void refresh(void);
 
 private:
     QImage mImage;
@@ -34,6 +36,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent*);
     void dragLeaveEvent(QDragLeaveEvent*);
     void dropEvent(QDropEvent*);
+    void mousePressEvent(QMouseEvent*);
 
 public slots:
     void setRaw(const QByteArray&);

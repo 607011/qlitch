@@ -11,9 +11,10 @@
 #include <QBuffer>
 #include <QTime>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , mAlgorithm(ALGORITHM_XOR)
 {
     ui->setupUi(this);
     imageWidget = new ImageWidget;
@@ -25,6 +26,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->percentageSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->iterationsSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(imageWidget, SIGNAL(imageDropped(QImage)), SLOT(setImage(QImage)));
+    QObject::connect(imageWidget, SIGNAL(refresh()), SLOT(updateImageWidget()));
+    ui->actionOne->setData(ALGORITHM_ONE);
+    ui->actionZero->setData(ALGORITHM_ZERO);
+    ui->actionXOR->setData(ALGORITHM_XOR);
+    QObject::connect(ui->actionOne, SIGNAL(triggered()), SLOT(setAlgorithm()));
+    QObject::connect(ui->actionZero, SIGNAL(triggered()), SLOT(setAlgorithm()));
+    QObject::connect(ui->actionXOR, SIGNAL(triggered()), SLOT(setAlgorithm()));
     qsrand(QTime::currentTime().msec());
 }
 
@@ -32,6 +40,11 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete imageWidget;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    e->ignore();
 }
 
 static double random(double lo, double hi) {
@@ -42,6 +55,8 @@ static double random(double lo, double hi) {
 
 void MainWindow::updateImageWidget(void)
 {
+    if (mImage.isNull())
+        return;
     int quality = ui->qualitySlider->value();
     int iterations = ui->iterationsSlider->value();
     int percent = ui->percentageSlider->value();
@@ -53,10 +68,33 @@ void MainWindow::updateImageWidget(void)
     for (int i = 0; i < iterations; ++i) {
         int pos = int(random(firstPos, raw.size()));
         int bit = qrand() % 8;
-        raw[pos] = raw.at(pos) | (1 << bit);
+
+        switch (mAlgorithm) {
+        default:
+          // fall-through
+        case ALGORITHM_XOR:
+          raw[pos] = raw.at(pos) ^(1 << bit);
+          break;
+        case ALGORITHM_ONE:
+          raw[pos] = raw.at(pos) | (1 << bit);
+          break;
+        case ALGORITHM_ZERO:
+          raw[pos] = raw.at(pos) & ~(1 << bit);
+          break;
+        }
     }
-    ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(buffer.size()));
+    ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(raw.size()), 3000);
     imageWidget->setRaw(raw);
+}
+
+void MainWindow::setAlgorithm(void)
+{
+    QAction* action = reinterpret_cast<QAction*>(sender());
+    if (action == NULL)
+        return;
+    mAlgorithm = (Algorithm)action->data().toInt();
+    ui->statusBar->showMessage(tr("Algorithm: %1").arg(mAlgorithm), 1000);
+    updateImageWidget();
 }
 
 void MainWindow::setImage(const QImage &img)

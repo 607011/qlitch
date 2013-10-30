@@ -24,19 +24,29 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    enum Algorithm {
+        ALGORITHM_ZERO,
+        ALGORITHM_ONE,
+        ALGORITHM_XOR
+    };
+
+
 private:
     Ui::MainWindow *ui;
-
     ImageWidget *imageWidget;
-
     QImage mImage;
 
+    Algorithm mAlgorithm;
+
+protected:
+    void keyPressEvent(QKeyEvent*);
 
 private slots:
     void setImage(const QImage&);
     void openImage(void);
     void saveImageAs(void);
     void updateImageWidget(void);
+    void setAlgorithm(void);
 };
 
 #endif // MAINWINDOW_H

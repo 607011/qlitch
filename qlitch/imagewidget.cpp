@@ -50,8 +50,10 @@ void ImageWidget::paintEvent(QPaintEvent*)
 void ImageWidget::setRaw(const QByteArray &raw)
 {
     bool ok = mImage.loadFromData(raw, "JPG");
-    if (!ok)
+    if (!ok) {
+        emit refresh();
         return;
+    }
     mImage = mImage.convertToFormat(QImage::Format_ARGB32);
     mImageAspectRatio = (qreal)mImage.width() / mImage.height();
     update();
@@ -86,4 +88,10 @@ void ImageWidget::dropEvent(QDropEvent* e)
 #endif
         emit imageDropped(QImage(fileUrl));
     }
+}
+
+void ImageWidget::mousePressEvent(QMouseEvent*e)
+{
+    if (e->button() == Qt::LeftButton)
+        emit refresh();
 }
