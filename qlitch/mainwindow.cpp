@@ -34,10 +34,9 @@ MainWindow::~MainWindow()
     delete imageWidget;
 }
 
-static double random(double x, double y) {
-    if (qFuzzyCompare(x, y))
-        return x;
-    double hi = qMax(x, y), lo = qMin(x, y);
+static double random(double lo, double hi) {
+    if (qFuzzyCompare(lo, hi))
+        return lo;
     return lo + ((hi - lo) * qrand() / (RAND_MAX + 1.0));
 }
 
@@ -56,6 +55,7 @@ void MainWindow::updateImageWidget(void)
         int bit = qrand() % 8;
         raw[pos] = raw.at(pos) | (1 << bit);
     }
+    ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(buffer.size()));
     imageWidget->setRaw(raw);
 }
 
