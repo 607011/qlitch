@@ -123,8 +123,16 @@
     </widget>
     <addaction name="menuAlgorithm"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAboutQt"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -157,6 +165,9 @@
    </property>
   </action>
   <action name="actionOne">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>One</string>
    </property>
@@ -165,6 +176,9 @@
    </property>
   </action>
   <action name="actionZero">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Zero</string>
    </property>
@@ -173,11 +187,24 @@
    </property>
   </action>
   <action name="actionXOR">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>XOR</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About Qlitch</string>
+   </property>
+  </action>
+  <action name="actionAboutQt">
+   <property name="text">
+    <string>About Qt</string>
    </property>
   </action>
  </widget>

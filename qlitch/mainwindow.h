@@ -47,6 +47,8 @@ private slots:
     void saveImageAs(void);
     void updateImageWidget(void);
     void setAlgorithm(void);
+    void about(void);
+    void aboutQt(void);
 };
 
 #endif // MAINWINDOW_H

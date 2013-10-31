@@ -1,15 +1,18 @@
 // Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
 // All rights reserved.
 
+#include "main.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "imagewidget.h"
+#include "random/rnd.h"
 
 #include <QtCore/QDebug>
 #include <QtGlobal>
 #include <QFileDialog>
 #include <QBuffer>
 #include <QTime>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     , mAlgorithm(ALGORITHM_XOR)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("%1 %2").arg(AppName).arg(AppVersion));
     imageWidget = new ImageWidget;
     ui->verticalLayout->addWidget(imageWidget);
     QObject::connect(ui->actionOpenImage, SIGNAL(triggered()), SLOT(openImage()));
@@ -33,7 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionOne, SIGNAL(triggered()), SLOT(setAlgorithm()));
     QObject::connect(ui->actionZero, SIGNAL(triggered()), SLOT(setAlgorithm()));
     QObject::connect(ui->actionXOR, SIGNAL(triggered()), SLOT(setAlgorithm()));
-    qsrand(QTime::currentTime().msec());
+    QObject::connect(ui->actionAbout, SIGNAL(triggered()), SLOT(about()));
+    QObject::connect(ui->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
+    RAND::initialize();
 }
 
 MainWindow::~MainWindow()
@@ -45,12 +51,6 @@ MainWindow::~MainWindow()
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     e->ignore();
-}
-
-static double random(double lo, double hi) {
-    if (qFuzzyCompare(lo, hi))
-        return lo;
-    return lo + ((hi - lo) * qrand() / (RAND_MAX + 1.0));
 }
 
 void MainWindow::updateImageWidget(void)
@@ -66,9 +66,8 @@ void MainWindow::updateImageWidget(void)
     mImage.save(&buffer, "JPG", quality);
     int firstPos = (long)(1e-2 * raw.size() * percent);
     for (int i = 0; i < iterations; ++i) {
-        int pos = int(random(firstPos, raw.size()));
-        int bit = qrand() % 8;
-
+        int pos = RAND::rnd(firstPos, raw.size());
+        int bit = RAND::rnd() % 8;
         switch (mAlgorithm) {
         default:
           // fall-through
@@ -92,6 +91,10 @@ void MainWindow::setAlgorithm(void)
     QAction* action = reinterpret_cast<QAction*>(sender());
     if (action == NULL)
         return;
+    ui->actionZero->setChecked(false);
+    ui->actionOne->setChecked(false);
+    ui->actionXOR->setChecked(false);
+    action->setChecked(true);
     mAlgorithm = (Algorithm)action->data().toInt();
     ui->statusBar->showMessage(tr("Algorithm: %1").arg(mAlgorithm), 1000);
     updateImageWidget();
@@ -120,4 +123,31 @@ void MainWindow::saveImageAs(void)
     if (imgFileName.isEmpty())
         return;
     imageWidget->image().save(imgFileName);
+}
+
+
+void MainWindow::about(void)
+{
+    QMessageBox::about(this, tr("About %1 %2%3").arg(AppName).arg(AppVersionNoDebug).arg(AppMinorVersion),
+                       tr("<p><b>%1</b> produces a JPG glitch effect in images.\n"
+                          "See <a href=\"%2\" title=\"%1 project homepage\">%2</a> for more info.</p>"
+                          "<p>Copyright &copy; 2013 %3 &lt;%4&gt;, Heise Zeitschriften Verlag.</p>"
+                          "<p>This program is free software: you can redistribute it and/or modify "
+                          "it under the terms of the GNU General Public License as published by "
+                          "the Free Software Foundation, either version 3 of the License, or "
+                          "(at your option) any later version.</p>"
+                          "<p>This program is distributed in the hope that it will be useful, "
+                          "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
+                          "GNU General Public License for more details.</p>"
+                          "You should have received a copy of the GNU General Public License "
+                          "along with this program. "
+                          "If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0\">http://www.gnu.org/licenses</a>.</p>")
+                       .arg(AppName).arg(AppUrl).arg(AppAuthor).arg(AppAuthorMail));
+}
+
+
+void MainWindow::aboutQt(void)
+{
+    QMessageBox::aboutQt(this);
 }
