@@ -35,15 +35,18 @@ ImageWidget::ImageWidget(QWidget *parent)
     setAcceptDrops(true);
 }
 
+
 const QImage &ImageWidget::image(void) const
 {
     return d_ptr->mImage;
 }
 
+
 void ImageWidget::resizeEvent(QResizeEvent* e)
 {
     d_ptr->mWindowAspectRatio = (qreal)e->size().width() / e->size().height();
 }
+
 
 void ImageWidget::paintEvent(QPaintEvent*)
 {
@@ -63,6 +66,7 @@ void ImageWidget::paintEvent(QPaintEvent*)
     p.drawImage(d->mDestRect, d->mImage);
 }
 
+
 void ImageWidget::setRaw(const QByteArray &raw)
 {
     Q_D(ImageWidget);
@@ -75,6 +79,7 @@ void ImageWidget::setRaw(const QByteArray &raw)
     d->mImageAspectRatio = (qreal)d->mImage.width() / d->mImage.height();
     update();
 }
+
 
 void ImageWidget::dragEnterEvent(QDragEnterEvent *e)
 {

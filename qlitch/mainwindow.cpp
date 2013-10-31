@@ -113,12 +113,13 @@ void MainWindow::updateImageWidget(void)
     Q_D(MainWindow);
     if (d->image.isNull())
         return;
-    qDebug() << "updateImageWidget()";
     QByteArray raw;
     QBuffer buffer(&raw);
     buffer.open(QIODevice::WriteOnly);
     d->image.save(&buffer, "JPG", ui->qualitySlider->value());
-    int firstPos = (long)(1e-2 * raw.size() *  ui->percentageSlider->value());
+    const int firstPos = raw.size()
+            * (ui->percentageSlider->value() - ui->percentageSlider->minimum())
+            / (ui->percentageSlider->maximum() - ui->percentageSlider->minimum());
     const int N = ui->iterationsSlider->value();
     for (int i = 0; i < N; ++i) {
         int pos = RAND::rnd(firstPos, raw.size());
@@ -147,12 +148,7 @@ void MainWindow::setAlgorithm(Algorithm a)
 {
     Q_D(MainWindow);
     QAction *action = reinterpret_cast<QAction*>(sender());
-    if (action) {
-        d->algorithm = (Algorithm)action->data().toInt();
-    }
-    else {
-        d->algorithm = a;
-    }
+    d->algorithm = (action != NULL)? (Algorithm)action->data().toInt() : a;
     ui->actionZero->setChecked(false);
     ui->actionOne->setChecked(false);
     ui->actionXOR->setChecked(false);
@@ -187,7 +183,6 @@ void MainWindow::setImage(const QImage &img)
 void MainWindow::openImage(const QString &filename)
 {
     Q_D(MainWindow);
-    qDebug() << "MainWindow::openImage(" << filename << ")";
     d->image.load(filename);
     if (d->image.isNull())
         return;

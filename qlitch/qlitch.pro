@@ -5,6 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qlitch
 TEMPLATE = app
 
+CONFIG += embed_manifest_exe
 
 SOURCES += main.cpp\
         mainwindow.cpp \
