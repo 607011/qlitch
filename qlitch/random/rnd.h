@@ -1,4 +1,4 @@
-// Copyright (c) 2008-2012 Oliver Lau <oliver@von-und-fuer-lau.de>
+// Copyright (c) 2008-2013 Oliver Lau <oliver@von-und-fuer-lau.de>
 // Alle Rechte vorbehalten.
 
 #ifndef __RND_H_
@@ -29,10 +29,11 @@ inline unsigned int rnd(int a)
 }
 
 
-inline int rnd(int a, int b)
+inline int rnd(int lo, int hi)
 {
-    Q_ASSERT(b >= a);
-    return a + RAND::rnd(1 + b - a);
+    lo = qMin(lo, hi);
+    hi = qMax(lo, hi);
+    return lo + RAND::rnd(1 + hi - lo);
 }
 
 

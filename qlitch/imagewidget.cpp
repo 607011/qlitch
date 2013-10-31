@@ -10,10 +10,25 @@
 #include <QMimeData>
 #include <QUrl>
 
+
+class ImageWidgetPrivate {
+public:
+    ImageWidgetPrivate(void)
+        : mWindowAspectRatio(0)
+        , mImageAspectRatio(0)
+    { /* ... */ }
+    ~ImageWidgetPrivate()
+    { /* ... */ }
+    QImage mImage;
+    QRect mDestRect;
+    qreal mWindowAspectRatio;
+    qreal mImageAspectRatio;
+};
+
+
 ImageWidget::ImageWidget(QWidget *parent)
     : QWidget(parent)
-    , mWindowAspectRatio(0)
-    , mImageAspectRatio(0)
+    , d_ptr(new ImageWidgetPrivate)
 {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setMinimumSize(320, 240);
@@ -22,44 +37,46 @@ ImageWidget::ImageWidget(QWidget *parent)
 
 const QImage &ImageWidget::image(void) const
 {
-    return mImage;
+    return d_ptr->mImage;
 }
 
 void ImageWidget::resizeEvent(QResizeEvent* e)
 {
-    mWindowAspectRatio = (qreal)e->size().width() / e->size().height();
+    d_ptr->mWindowAspectRatio = (qreal)e->size().width() / e->size().height();
 }
 
 void ImageWidget::paintEvent(QPaintEvent*)
 {
+    Q_D(ImageWidget);
     QPainter p(this);
     p.fillRect(rect(), Qt::black);
-    if (mImage.isNull() || qFuzzyIsNull(mImageAspectRatio))
+    if (d->mImage.isNull() || qFuzzyIsNull(d->mImageAspectRatio))
         return;
-    if (mWindowAspectRatio < mImageAspectRatio) {
-        const int h = int(width() / mImageAspectRatio);
-        mDestRect = QRect(0, (height()-h)/2, width(), h);
+    if (d->mWindowAspectRatio < d->mImageAspectRatio) {
+        const int h = int(width() / d->mImageAspectRatio);
+        d->mDestRect = QRect(0, (height()-h)/2, width(), h);
     }
     else {
-        const int w = int(height() * mImageAspectRatio);
-        mDestRect = QRect((width()-w)/2, 0, w, height());
+        const int w = int(height() *d-> mImageAspectRatio);
+        d->mDestRect = QRect((width()-w)/2, 0, w, height());
     }
-    p.drawImage(mDestRect, mImage);
+    p.drawImage(d->mDestRect, d->mImage);
 }
 
 void ImageWidget::setRaw(const QByteArray &raw)
 {
-    bool ok = mImage.loadFromData(raw, "JPG");
+    Q_D(ImageWidget);
+    bool ok = d->mImage.loadFromData(raw, "JPG");
     if (!ok) {
         emit refresh();
         return;
     }
-    mImage = mImage.convertToFormat(QImage::Format_ARGB32);
-    mImageAspectRatio = (qreal)mImage.width() / mImage.height();
+    d->mImage = d->mImage.convertToFormat(QImage::Format_ARGB32);
+    d->mImageAspectRatio = (qreal)d->mImage.width() / d->mImage.height();
     update();
 }
 
-void ImageWidget::dragEnterEvent(QDragEnterEvent* e)
+void ImageWidget::dragEnterEvent(QDragEnterEvent *e)
 {
     const QMimeData* const d = e->mimeData();
     if (d->hasUrls() && d->urls().first().toString().contains(QRegExp("\\.(png|jpg|gif|ico|mng|tga|tiff?)$")))
@@ -69,15 +86,15 @@ void ImageWidget::dragEnterEvent(QDragEnterEvent* e)
 }
 
 
-void ImageWidget::dragLeaveEvent(QDragLeaveEvent* e)
+void ImageWidget::dragLeaveEvent(QDragLeaveEvent *e)
 {
     e->accept();
 }
 
 
-void ImageWidget::dropEvent(QDropEvent* e)
+void ImageWidget::dropEvent(QDropEvent *e)
 {
-    const QMimeData* const d = e->mimeData();
+    const QMimeData *const d = e->mimeData();
     if (d->hasUrls()) {
         QString fileUrl = d->urls().first().toString();
         if (fileUrl.contains(QRegExp("file://.*\\.(png|jpg|jpeg|gif|ico|mng|tga|tiff?)$")))
@@ -90,7 +107,7 @@ void ImageWidget::dropEvent(QDropEvent* e)
     }
 }
 
-void ImageWidget::mousePressEvent(QMouseEvent*e)
+void ImageWidget::mousePressEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton)
         emit refresh();

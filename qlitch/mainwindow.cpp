@@ -13,116 +13,206 @@
 #include <QBuffer>
 #include <QTime>
 #include <QMessageBox>
+#include <QSettings>
+
+
+class MainWindowPrivate {
+public:
+    explicit MainWindowPrivate(void)
+        : algorithm(MainWindow::Algorithm::ALGORITHM_XOR)
+        , imageWidget(new ImageWidget)
+
+    { /* ... */ }
+    ~MainWindowPrivate()
+    {
+        delete imageWidget;
+    }
+    ImageWidget *imageWidget;
+    MainWindow::Algorithm algorithm;
+    QImage image;
+    QString imageFilename;
+};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , mAlgorithm(ALGORITHM_XOR)
+    , d_ptr(new MainWindowPrivate)
 {
     ui->setupUi(this);
     setWindowTitle(tr("%1 %2").arg(AppName).arg(AppVersion));
-    imageWidget = new ImageWidget;
-    ui->verticalLayout->addWidget(imageWidget);
+    ui->verticalLayout->addWidget(d_ptr->imageWidget);
     QObject::connect(ui->actionOpenImage, SIGNAL(triggered()), SLOT(openImage()));
     QObject::connect(ui->actionSaveImageAs, SIGNAL(triggered()), SLOT(saveImageAs()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), SLOT(close()));
+    QObject::connect(ui->actionAbout, SIGNAL(triggered()), SLOT(about()));
+    QObject::connect(ui->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
     QObject::connect(ui->qualitySlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->percentageSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->iterationsSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
-    QObject::connect(imageWidget, SIGNAL(imageDropped(QImage)), SLOT(setImage(QImage)));
-    QObject::connect(imageWidget, SIGNAL(refresh()), SLOT(updateImageWidget()));
+    QObject::connect(d_ptr->imageWidget, SIGNAL(imageDropped(QImage)), SLOT(setImage(QImage)));
+    QObject::connect(d_ptr->imageWidget, SIGNAL(refresh()), SLOT(updateImageWidget()));
     ui->actionOne->setData(ALGORITHM_ONE);
-    ui->actionZero->setData(ALGORITHM_ZERO);
-    ui->actionXOR->setData(ALGORITHM_XOR);
     QObject::connect(ui->actionOne, SIGNAL(triggered()), SLOT(setAlgorithm()));
+    ui->actionZero->setData(ALGORITHM_ZERO);
     QObject::connect(ui->actionZero, SIGNAL(triggered()), SLOT(setAlgorithm()));
+    ui->actionXOR->setData(ALGORITHM_XOR);
     QObject::connect(ui->actionXOR, SIGNAL(triggered()), SLOT(setAlgorithm()));
-    QObject::connect(ui->actionAbout, SIGNAL(triggered()), SLOT(about()));
-    QObject::connect(ui->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
     RAND::initialize();
+    restoreSettings();
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete imageWidget;
 }
+
+
+void MainWindow::restoreSettings(void)
+{
+    Q_D(MainWindow);
+    QSettings settings(Company, AppName);
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    setAlgorithm((Algorithm)settings.value("Options/algorithm", ALGORITHM_ONE).toInt());
+    d->imageFilename = settings.value("Options/recentImageFilename", "qrc:/images/default.jpg").toString();
+    if (!d->imageFilename.isEmpty())
+        openImage(d->imageFilename);
+    ui->percentageSlider->setValue(settings.value("Options/percent", 70).toInt());
+    ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
+    ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
+}
+
+
+void MainWindow::saveSettings(void)
+{
+    Q_D(MainWindow);
+    QSettings settings(Company, AppName);
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("Options/algorithm", d->algorithm);
+    settings.setValue("Options/recentImageFilename", d->imageFilename);
+    settings.setValue("Options/percent", ui->percentageSlider->value());
+    settings.setValue("Options/iterations", ui->iterationsSlider->value());
+    settings.setValue("Options/quality", ui->qualitySlider->value());
+}
+
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    saveSettings();
+}
+
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     e->ignore();
 }
 
+
 void MainWindow::updateImageWidget(void)
 {
-    if (mImage.isNull())
+    Q_D(MainWindow);
+    if (d->image.isNull())
         return;
-    int quality = ui->qualitySlider->value();
-    int iterations = ui->iterationsSlider->value();
-    int percent = ui->percentageSlider->value();
+    qDebug() << "updateImageWidget()";
     QByteArray raw;
     QBuffer buffer(&raw);
     buffer.open(QIODevice::WriteOnly);
-    mImage.save(&buffer, "JPG", quality);
-    int firstPos = (long)(1e-2 * raw.size() * percent);
-    for (int i = 0; i < iterations; ++i) {
+    d->image.save(&buffer, "JPG", ui->qualitySlider->value());
+    int firstPos = (long)(1e-2 * raw.size() *  ui->percentageSlider->value());
+    const int N = ui->iterationsSlider->value();
+    for (int i = 0; i < N; ++i) {
         int pos = RAND::rnd(firstPos, raw.size());
-        int bit = RAND::rnd() % 8;
-        switch (mAlgorithm) {
+        int bit = 1 << (RAND::rnd() % 8);
+        switch (d->algorithm) {
         default:
           // fall-through
         case ALGORITHM_XOR:
-          raw[pos] = raw.at(pos) ^(1 << bit);
+          raw[pos] = raw.at(pos) ^ bit;
           break;
         case ALGORITHM_ONE:
-          raw[pos] = raw.at(pos) | (1 << bit);
+          raw[pos] = raw.at(pos) | bit;
           break;
         case ALGORITHM_ZERO:
-          raw[pos] = raw.at(pos) & ~(1 << bit);
+          raw[pos] = raw.at(pos) & ~bit;
           break;
         }
     }
     ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(raw.size()), 3000);
-    imageWidget->setRaw(raw);
+    buffer.close();
+    d->imageWidget->setRaw(raw);
 }
 
-void MainWindow::setAlgorithm(void)
+
+void MainWindow::setAlgorithm(Algorithm a)
 {
-    QAction* action = reinterpret_cast<QAction*>(sender());
-    if (action == NULL)
-        return;
+    Q_D(MainWindow);
+    QAction *action = reinterpret_cast<QAction*>(sender());
+    if (action) {
+        d->algorithm = (Algorithm)action->data().toInt();
+    }
+    else {
+        d->algorithm = a;
+    }
     ui->actionZero->setChecked(false);
     ui->actionOne->setChecked(false);
     ui->actionXOR->setChecked(false);
-    action->setChecked(true);
-    mAlgorithm = (Algorithm)action->data().toInt();
-    ui->statusBar->showMessage(tr("Algorithm: %1").arg(mAlgorithm), 1000);
+    switch (d->algorithm) {
+    case ALGORITHM_ONE:
+        ui->actionOne->setChecked(true);
+        break;
+    case ALGORITHM_ZERO:
+        ui->actionZero->setChecked(true);
+        break;
+    case ALGORITHM_XOR:
+        ui->actionXOR->setChecked(true);
+        break;
+    case ALGORITHM_NONE:
+        // fall-through
+    default:
+        break;
+    }
+    ui->statusBar->showMessage(tr("Algorithm: %1").arg(d->algorithm), 1000);
     updateImageWidget();
 }
+
 
 void MainWindow::setImage(const QImage &img)
 {
-    mImage = img;
+    Q_D(MainWindow);
+    d->image = img;
     updateImageWidget();
 }
+
+
+void MainWindow::openImage(const QString &filename)
+{
+    Q_D(MainWindow);
+    qDebug() << "MainWindow::openImage(" << filename << ")";
+    d->image.load(filename);
+    if (d->image.isNull())
+        return;
+    updateImageWidget();
+}
+
 
 void MainWindow::openImage(void)
 {
+    Q_D(MainWindow);
     const QString &imgFileName = QFileDialog::getOpenFileName(this, tr("Open image ..."));
     if (imgFileName.isEmpty())
         return;
-    mImage.load(imgFileName);
-    if (mImage.isNull())
-        return;
-    updateImageWidget();
+    d->imageFilename = imgFileName;
+    openImage(d->imageFilename);
 }
+
 
 void MainWindow::saveImageAs(void)
 {
+    Q_D(MainWindow);
     const QString &imgFileName = QFileDialog::getSaveFileName(this, tr("Save image as ..."));
     if (imgFileName.isEmpty())
         return;
-    imageWidget->image().save(imgFileName);
+    d->imageWidget->image().save(imgFileName);
 }
 
 

@@ -6,3 +6,4 @@ glitch-cmd/*.vcxproj.user
 glitch-cmd/Debug/*
 glitch-cmd/Release/*
 qlitch/*.pro.user
+qlitch-Desktop*

@@ -1,8 +1,8 @@
 // Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
 // All rights reserved.
 
-#ifndef IMAGEWIDGET_H
-#define IMAGEWIDGET_H
+#ifndef __IMAGEWIDGET_H_
+#define __IMAGEWIDGET_H_
 
 #include <QWidget>
 #include <QByteArray>
@@ -11,24 +11,23 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 #include <QImage>
+#include <QScopedPointer>
+
+class ImageWidgetPrivate;
 
 class ImageWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit ImageWidget(QWidget *parent = 0);
-
     const QImage& image(void) const;
+
+public slots:
+    void setRaw(const QByteArray&);
 
 signals:
     void imageDropped(const QImage&);
     void refresh(void);
-
-private:
-    QImage mImage;
-    QRect mDestRect;
-    qreal mWindowAspectRatio;
-    qreal mImageAspectRatio;
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -38,8 +37,11 @@ protected:
     void dropEvent(QDropEvent*);
     void mousePressEvent(QMouseEvent*);
 
-public slots:
-    void setRaw(const QByteArray&);
+private:
+    QScopedPointer<ImageWidgetPrivate> d_ptr;
+    Q_DECLARE_PRIVATE(ImageWidget)
+    Q_DISABLE_COPY(ImageWidget)
+
 };
 
-#endif // IMAGEWIDGET_H
+#endif // __IMAGEWIDGET_H_

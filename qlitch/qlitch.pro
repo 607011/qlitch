@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-10-28T10:55:48
-#
-#-------------------------------------------------
-
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -26,3 +20,6 @@ HEADERS  += mainwindow.h \
     random/abstract_random_number_generator.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    qlitch.qrc

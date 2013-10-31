@@ -1,14 +1,12 @@
 // Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
 // All rights reserved.
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef __MAINWINDOW_H_
+#define __MAINWINDOW_H_
 
 #include <QtCore/QDebug>
 #include <QMainWindow>
-#include <QByteArray>
 #include <QScopedPointer>
-#include <QFile>
 
 #include "imagewidget.h"
 
@@ -16,39 +14,46 @@ namespace Ui {
 class MainWindow;
 }
 
+class MainWindowPrivate;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = NULL);
     ~MainWindow();
 
     enum Algorithm {
-        ALGORITHM_ZERO,
-        ALGORITHM_ONE,
+        ALGORITHM_NONE = -1,
+        ALGORITHM_ZERO = 0,
+        ALGORITHM_ONE = 1,
         ALGORITHM_XOR
     };
 
+private: // methods
+    void saveSettings(void);
+    void restoreSettings(void);
 
-private:
+private: // variables
     Ui::MainWindow *ui;
-    ImageWidget *imageWidget;
-    QImage mImage;
-
-    Algorithm mAlgorithm;
+    QScopedPointer<MainWindowPrivate> d_ptr;
+    Q_DECLARE_PRIVATE(MainWindow)
+    Q_DISABLE_COPY(MainWindow)
 
 protected:
     void keyPressEvent(QKeyEvent*);
+    void closeEvent(QCloseEvent*);
 
 private slots:
     void setImage(const QImage&);
+    void openImage(const QString &filename);
     void openImage(void);
     void saveImageAs(void);
     void updateImageWidget(void);
-    void setAlgorithm(void);
+    void setAlgorithm(Algorithm a = ALGORITHM_NONE);
     void about(void);
     void aboutQt(void);
 };
 
-#endif // MAINWINDOW_H
+#endif // __MAINWINDOW_H_
