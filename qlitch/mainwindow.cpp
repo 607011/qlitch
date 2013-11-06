@@ -14,6 +14,9 @@
 #include <QTime>
 #include <QMessageBox>
 #include <QSettings>
+#include <QApplication>
+#include <QClipboard>
+#include <QKeyEvent>
 
 
 class MainWindowPrivate {
@@ -33,6 +36,7 @@ public:
     QString imageFilename;
 };
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -46,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionExit, SIGNAL(triggered()), SLOT(close()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), SLOT(about()));
     QObject::connect(ui->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
+    QObject::connect(ui->actionCopyImageToClipboard, SIGNAL(triggered()), SLOT(copyToClipboard()));
+    QObject::connect(ui->actionPasteImageFromClipboard, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     QObject::connect(ui->qualitySlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->percentageSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->iterationsSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
@@ -104,7 +110,16 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
-    e->ignore();
+    Q_D(MainWindow);
+    switch (e->key()) {
+    case Qt::Key_Space:
+        updateImageWidget();
+        break;
+    case Qt::Key_Escape:
+        d->imageWidget->resetSelection();
+        break;
+    }
+    e->accept();
 }
 
 
@@ -169,6 +184,24 @@ void MainWindow::setAlgorithm(Algorithm a)
     }
     ui->statusBar->showMessage(tr("Algorithm: %1").arg(d->algorithm), 1000);
     updateImageWidget();
+}
+
+
+void MainWindow::copyToClipboard(void)
+{
+    Q_D(MainWindow);
+    QApplication::clipboard()->setImage(d->imageWidget->image(), QClipboard::Clipboard);
+    ui->statusBar->showMessage(tr("Image copied to clipboard."), 5000);
+}
+
+
+void MainWindow::pasteFromClipboard(void)
+{
+    if (QApplication::clipboard()->mimeData()->hasImage()) {
+        const QPixmap &pix = QApplication::clipboard()->pixmap(QClipboard::Clipboard);
+        if (!pix.isNull())
+            setImage(pix.toImage());
+    }
 }
 
 

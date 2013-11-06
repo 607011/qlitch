@@ -9,20 +9,26 @@
 #include <QSizePolicy>
 #include <QMimeData>
 #include <QUrl>
+#include <QMouseEvent>
+#include <QPoint>
+#include <QRect>
 
 
 class ImageWidgetPrivate {
 public:
     ImageWidgetPrivate(void)
-        : mWindowAspectRatio(0)
-        , mImageAspectRatio(0)
+        : windowAspectRatio(0)
+        , imageAspectRatio(0)
+        , mouseDown(false)
     { /* ... */ }
     ~ImageWidgetPrivate()
     { /* ... */ }
-    QImage mImage;
-    QRect mDestRect;
-    qreal mWindowAspectRatio;
-    qreal mImageAspectRatio;
+    QImage image;
+    QRect destRect;
+    qreal windowAspectRatio;
+    qreal imageAspectRatio;
+    bool mouseDown;
+    QRect selectedArea;
 };
 
 
@@ -33,18 +39,24 @@ ImageWidget::ImageWidget(QWidget *parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setMinimumSize(320, 240);
     setAcceptDrops(true);
+    setFocus();
 }
 
 
-const QImage &ImageWidget::image(void) const
+QImage ImageWidget::image(void)
 {
-    return d_ptr->mImage;
+    Q_D(ImageWidget);
+    if (d->selectedArea.isEmpty())
+        return d->image;
+    else {
+        return d->image;
+    }
 }
 
 
 void ImageWidget::resizeEvent(QResizeEvent* e)
 {
-    d_ptr->mWindowAspectRatio = (qreal)e->size().width() / e->size().height();
+    d_ptr->windowAspectRatio = (qreal)e->size().width() / e->size().height();
 }
 
 
@@ -53,30 +65,43 @@ void ImageWidget::paintEvent(QPaintEvent*)
     Q_D(ImageWidget);
     QPainter p(this);
     p.fillRect(rect(), Qt::black);
-    if (d->mImage.isNull() || qFuzzyIsNull(d->mImageAspectRatio))
+    if (d->image.isNull() || qFuzzyIsNull(d->imageAspectRatio))
         return;
-    if (d->mWindowAspectRatio < d->mImageAspectRatio) {
-        const int h = int(width() / d->mImageAspectRatio);
-        d->mDestRect = QRect(0, (height()-h)/2, width(), h);
+    if (d->windowAspectRatio < d->imageAspectRatio) {
+        const int h = int(width() / d->imageAspectRatio);
+        d->destRect = QRect(0, (height()-h)/2, width(), h);
     }
     else {
-        const int w = int(height() *d-> mImageAspectRatio);
-        d->mDestRect = QRect((width()-w)/2, 0, w, height());
+        const int w = int(height() * d-> imageAspectRatio);
+        d->destRect = QRect((width()-w)/2, 0, w, height());
     }
-    p.drawImage(d->mDestRect, d->mImage);
+    p.drawImage(d->destRect, d->image);
+    if (!d->selectedArea.isNull()) {
+        p.setBrush(Qt::transparent);
+        p.setPen(QPen(QBrush(QColor(255, 255, 255, 128)), 1, Qt::DashLine));
+        p.drawRect(d->selectedArea.normalized());
+    }
 }
 
 
 void ImageWidget::setRaw(const QByteArray &raw)
 {
     Q_D(ImageWidget);
-    bool ok = d->mImage.loadFromData(raw, "JPG");
+    bool ok = d->image.loadFromData(raw, "JPG");
     if (!ok) {
         emit refresh();
         return;
     }
-    d->mImage = d->mImage.convertToFormat(QImage::Format_ARGB32);
-    d->mImageAspectRatio = (qreal)d->mImage.width() / d->mImage.height();
+    d->image = d->image.convertToFormat(QImage::Format_ARGB32);
+    d->imageAspectRatio = (qreal)d->image.width() / d->image.height();
+    update();
+}
+
+
+void ImageWidget::resetSelection(void)
+{
+    Q_D(ImageWidget);
+    d->selectedArea = QRect();
     update();
 }
 
@@ -112,8 +137,31 @@ void ImageWidget::dropEvent(QDropEvent *e)
     }
 }
 
+
 void ImageWidget::mousePressEvent(QMouseEvent *e)
 {
-    if (e->button() == Qt::LeftButton)
-        emit refresh();
+    Q_D(ImageWidget);
+    if (e->button() == Qt::LeftButton) {
+        d->selectedArea = QRect(e->pos(), e->pos());
+        d->mouseDown = true;
+        update();
+    }
+}
+
+
+void ImageWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    Q_D(ImageWidget);
+    if (d->mouseDown) {
+        d->selectedArea.setBottomRight(e->pos());
+        update();
+    }
+}
+
+
+void ImageWidget::mouseReleaseEvent(QMouseEvent *)
+{
+    Q_D(ImageWidget);
+    d->mouseDown = false;
+    d->selectedArea = QRect();
 }

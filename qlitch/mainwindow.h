@@ -52,6 +52,8 @@ private slots:
     void saveImageAs(void);
     void updateImageWidget(void);
     void setAlgorithm(Algorithm a = ALGORITHM_NONE);
+    void copyToClipboard(void);
+    void pasteFromClipboard(void);
     void about(void);
     void aboutQt(void);
 };

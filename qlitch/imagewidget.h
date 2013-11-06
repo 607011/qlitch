@@ -19,11 +19,12 @@ class ImageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ImageWidget(QWidget *parent = 0);
-    const QImage& image(void) const;
+    explicit ImageWidget(QWidget *parent = NULL);
+    QImage image(void);
 
 public slots:
     void setRaw(const QByteArray&);
+    void resetSelection(void);
 
 signals:
     void imageDropped(const QImage&);
@@ -36,6 +37,8 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent*);
     void dropEvent(QDropEvent*);
     void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
 
 private:
     QScopedPointer<ImageWidgetPrivate> d_ptr;
