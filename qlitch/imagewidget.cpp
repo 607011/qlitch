@@ -46,10 +46,14 @@ ImageWidget::ImageWidget(QWidget *parent)
 QImage ImageWidget::image(void)
 {
     Q_D(ImageWidget);
-    if (d->selectedArea.isEmpty())
+    qDebug() << "ImageWidget::image()" << d->selectedArea;
+    const QRect &selection = d->selectedArea.normalized();
+    if (selection.isEmpty())
         return d->image;
     else {
-        return d->image;
+        QRect rect = QRect(selection.topLeft() - d->destRect.topLeft(), selection.size());
+        qDebug() << rect;
+        return d->image.copy(rect);
     }
 }
 
@@ -98,14 +102,6 @@ void ImageWidget::setRaw(const QByteArray &raw)
 }
 
 
-void ImageWidget::resetSelection(void)
-{
-    Q_D(ImageWidget);
-    d->selectedArea = QRect();
-    update();
-}
-
-
 void ImageWidget::dragEnterEvent(QDragEnterEvent *e)
 {
     const QMimeData* const d = e->mimeData();
@@ -135,33 +131,4 @@ void ImageWidget::dropEvent(QDropEvent *e)
 #endif
         emit imageDropped(QImage(fileUrl));
     }
-}
-
-
-void ImageWidget::mousePressEvent(QMouseEvent *e)
-{
-    Q_D(ImageWidget);
-    if (e->button() == Qt::LeftButton) {
-        d->selectedArea = QRect(e->pos(), e->pos());
-        d->mouseDown = true;
-        update();
-    }
-}
-
-
-void ImageWidget::mouseMoveEvent(QMouseEvent *e)
-{
-    Q_D(ImageWidget);
-    if (d->mouseDown) {
-        d->selectedArea.setBottomRight(e->pos());
-        update();
-    }
-}
-
-
-void ImageWidget::mouseReleaseEvent(QMouseEvent *)
-{
-    Q_D(ImageWidget);
-    d->mouseDown = false;
-    d->selectedArea = QRect();
 }

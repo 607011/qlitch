@@ -24,7 +24,6 @@ public:
 
 public slots:
     void setRaw(const QByteArray&);
-    void resetSelection(void);
 
 signals:
     void imageDropped(const QImage&);
@@ -36,9 +35,6 @@ protected:
     void dragEnterEvent(QDragEnterEvent*);
     void dragLeaveEvent(QDragLeaveEvent*);
     void dropEvent(QDropEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-    void mouseReleaseEvent(QMouseEvent*);
 
 private:
     QScopedPointer<ImageWidgetPrivate> d_ptr;

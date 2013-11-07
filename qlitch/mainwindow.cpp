@@ -110,14 +110,13 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
-    Q_D(MainWindow);
     switch (e->key()) {
     case Qt::Key_Space:
         updateImageWidget();
         break;
-    case Qt::Key_Escape:
-        d->imageWidget->resetSelection();
-        break;
+    default:
+        e->ignore();
+        return;
     }
     e->accept();
 }
