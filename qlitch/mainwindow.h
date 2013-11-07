@@ -51,6 +51,8 @@ private slots:
     void openImage(void);
     void saveImageAs(void);
     void updateImageWidget(void);
+    void positionChanged(int, int);
+    void singleBitModeChanged(bool);
     void setAlgorithm(Algorithm a = ALGORITHM_NONE);
     void copyToClipboard(void);
     void pasteFromClipboard(void);

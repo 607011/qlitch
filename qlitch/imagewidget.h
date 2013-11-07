@@ -24,10 +24,12 @@ public:
 
 public slots:
     void setRaw(const QByteArray&);
+    void showHelp(bool);
 
 signals:
     void imageDropped(const QImage&);
     void refresh(void);
+    void positionChanged(int pos, int maxPos);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -35,6 +37,12 @@ protected:
     void dragEnterEvent(QDragEnterEvent*);
     void dragLeaveEvent(QDragLeaveEvent*);
     void dropEvent(QDropEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
+
+private:
+    void calcDestRect(void);
 
 private:
     QScopedPointer<ImageWidgetPrivate> d_ptr;

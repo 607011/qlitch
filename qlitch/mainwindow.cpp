@@ -24,6 +24,7 @@ public:
     explicit MainWindowPrivate(void)
         : algorithm(MainWindow::Algorithm::ALGORITHM_XOR)
         , imageWidget(new ImageWidget)
+        , flipBit(0)
 
     { /* ... */ }
     ~MainWindowPrivate()
@@ -34,6 +35,7 @@ public:
     MainWindow::Algorithm algorithm;
     QImage image;
     QString imageFilename;
+    int flipBit;
 };
 
 
@@ -57,6 +59,9 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->iterationsSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(d_ptr->imageWidget, SIGNAL(imageDropped(QImage)), SLOT(setImage(QImage)));
     QObject::connect(d_ptr->imageWidget, SIGNAL(refresh()), SLOT(updateImageWidget()));
+    QObject::connect(d_ptr->imageWidget, SIGNAL(positionChanged(int,int)), SLOT(positionChanged(int,int)));
+    QObject::connect(ui->actionShowInlineHelp, SIGNAL(toggled(bool)), d_ptr->imageWidget, SLOT(showHelp(bool)));
+    QObject::connect(ui->actionSingleBitMode, SIGNAL(toggled(bool)), SLOT(singleBitModeChanged(bool)));
     ui->actionOne->setData(ALGORITHM_ONE);
     QObject::connect(ui->actionOne, SIGNAL(triggered()), SLOT(setAlgorithm()));
     ui->actionZero->setData(ALGORITHM_ZERO);
@@ -86,6 +91,9 @@ void MainWindow::restoreSettings(void)
     ui->percentageSlider->setValue(settings.value("Options/percent", 70).toInt());
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
+    ui->actionSingleBitMode->setChecked(settings.value("Options/singleBitMode", true).toBool());
+    singleBitModeChanged(ui->actionSingleBitMode->isChecked());
+    ui->actionShowInlineHelp->setChecked(settings.value("Options/showInlineHelp", true).toBool());
 }
 
 
@@ -99,6 +107,8 @@ void MainWindow::saveSettings(void)
     settings.setValue("Options/percent", ui->percentageSlider->value());
     settings.setValue("Options/iterations", ui->iterationsSlider->value());
     settings.setValue("Options/quality", ui->qualitySlider->value());
+    settings.setValue("Options/singleBitMode", ui->actionSingleBitMode->isChecked());
+    settings.setValue("Options/showInlineHelp", ui->actionShowInlineHelp->isChecked());
 }
 
 
@@ -131,30 +141,71 @@ void MainWindow::updateImageWidget(void)
     QBuffer buffer(&raw);
     buffer.open(QIODevice::WriteOnly);
     d->image.save(&buffer, "JPG", ui->qualitySlider->value());
-    const int firstPos = raw.size()
+    // skip JPEG header (quantization tables, Huffmann tables ...)
+    int headerSize = 0;
+    for (int i = 0; i < raw.size() - 1; ++i) {
+        if (uchar(raw.at(i)) == 0xffu && uchar(raw.at(i + 1)) == 0xdau) {
+            headerSize = i + 2;
+            break;
+        }
+    }
+    const int firstPos = headerSize +
+            (raw.size() - headerSize)
             * (ui->percentageSlider->value() - ui->percentageSlider->minimum())
             / (ui->percentageSlider->maximum() - ui->percentageSlider->minimum());
-    const int N = ui->iterationsSlider->value();
-    for (int i = 0; i < N; ++i) {
-        int pos = RAND::rnd(firstPos, raw.size());
-        int bit = 1 << (RAND::rnd() % 8);
+    if (ui->actionSingleBitMode->isChecked()) {
+        uchar bit = 1 << (d->flipBit++ % 8);
         switch (d->algorithm) {
         default:
           // fall-through
         case ALGORITHM_XOR:
-          raw[pos] = raw.at(pos) ^ bit;
+          raw[firstPos] = uchar(raw.at(firstPos)) ^ bit;
           break;
         case ALGORITHM_ONE:
-          raw[pos] = raw.at(pos) | bit;
+          raw[firstPos] = uchar(raw.at(firstPos)) | bit;
           break;
         case ALGORITHM_ZERO:
-          raw[pos] = raw.at(pos) & ~bit;
+          raw[firstPos] = uchar(raw.at(firstPos)) & ~bit;
           break;
+        }
+    }
+    else {
+        const int N = ui->iterationsSlider->value();
+        for (int i = 0; i < N; ++i) {
+            int pos = RAND::rnd(firstPos, raw.size());
+            uchar bit = 1 << (RAND::rnd() % 8);
+            switch (d->algorithm) {
+            default:
+              // fall-through
+            case ALGORITHM_XOR:
+              raw[pos] = uchar(raw.at(pos)) ^ bit;
+              break;
+            case ALGORITHM_ONE:
+              raw[pos] = uchar(raw.at(pos)) | bit;
+              break;
+            case ALGORITHM_ZERO:
+              raw[pos] = uchar(raw.at(pos)) & ~bit;
+              break;
+            }
         }
     }
     ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(raw.size()), 3000);
     buffer.close();
     d->imageWidget->setRaw(raw);
+}
+
+
+void MainWindow::positionChanged(int bPos, int maxPos)
+{
+    qreal relPos = (qreal)bPos / maxPos;
+    int v = int(ui->percentageSlider->minimum() + relPos * (ui->percentageSlider->maximum() - ui->percentageSlider->minimum()));
+    ui->percentageSlider->setValue(v);
+}
+
+
+void MainWindow::singleBitModeChanged(bool enabled)
+{
+    ui->iterationsSlider->setEnabled(!enabled);
 }
 
 

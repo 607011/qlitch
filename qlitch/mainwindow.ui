@@ -43,6 +43,9 @@
           <property name="minimum">
            <number>1</number>
           </property>
+          <property name="maximum">
+           <number>10000</number>
+          </property>
           <property name="value">
            <number>60</number>
           </property>
@@ -122,11 +125,14 @@
      <addaction name="actionXOR"/>
     </widget>
     <addaction name="menuAlgorithm"/>
+    <addaction name="actionSingleBitMode"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionShowInlineHelp"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
     <addaction name="actionAboutQt"/>
    </widget>
@@ -229,6 +235,42 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionMouse">
+   <property name="text">
+    <string>Mouse</string>
+   </property>
+  </action>
+  <action name="actionSingleBitMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Single bit mode</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionShowInlineHelp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show inline help</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+ß</string>
    </property>
   </action>
  </widget>
