@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/images">
         <file alias="default.jpg">images/original.jpg</file>
     </qresource>
     <qresource prefix="/translations">

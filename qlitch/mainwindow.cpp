@@ -87,10 +87,8 @@ void MainWindow::restoreSettings(void)
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     setAlgorithm((Algorithm)settings.value("Options/algorithm", ALGORITHM_ONE).toInt());
     d->imageFilename = settings.value("Options/recentImageFilename", ":/images/default.jpg").toString();
-    if (!d->imageFilename.isEmpty()) {
-        if (!openImage(d->imageFilename))
-            openImage(":/images/default.jpg");
-    }
+    if (!openImage(d->imageFilename))
+        openImage(":/images/default.jpg");
     ui->percentageSlider->setValue(settings.value("Options/percent", 70).toInt());
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
