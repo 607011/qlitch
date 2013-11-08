@@ -8,3 +8,5 @@ glitch-cmd/Release/*
 qlitch/*.pro.user
 qlitch-Desktop*
 deploy/*
+qlitch/*.qm
+

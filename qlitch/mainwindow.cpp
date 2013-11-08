@@ -21,8 +21,9 @@
 
 class MainWindowPrivate {
 public:
+
     explicit MainWindowPrivate(void)
-        : algorithm(MainWindow::Algorithm::ALGORITHM_XOR)
+        : algorithm(ALGORITHM_XOR)
         , imageWidget(new ImageWidget)
         , flipBit(0)
 
@@ -31,8 +32,8 @@ public:
     {
         delete imageWidget;
     }
+    Algorithm algorithm;
     ImageWidget *imageWidget;
-    MainWindow::Algorithm algorithm;
     QImage image;
     QString imageFilename;
     quint64 flipBit;
@@ -45,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     , d_ptr(new MainWindowPrivate)
 {
     ui->setupUi(this);
-    setWindowTitle(tr("%1 %2").arg(AppName).arg(AppVersion));
+    setWindowTitle(tr("%1 %2 (%3)").arg(AppName).arg(AppVersion).arg(AppPlatform));
     ui->verticalLayout->addWidget(d_ptr->imageWidget);
     QObject::connect(ui->actionOpenImage, SIGNAL(triggered()), SLOT(openImage()));
     QObject::connect(ui->actionSaveImageAs, SIGNAL(triggered()), SLOT(saveImageAs()));
@@ -85,9 +86,11 @@ void MainWindow::restoreSettings(void)
     QSettings settings(Company, AppName);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     setAlgorithm((Algorithm)settings.value("Options/algorithm", ALGORITHM_ONE).toInt());
-    d->imageFilename = settings.value("Options/recentImageFilename", "qrc:/images/default.jpg").toString();
-    if (!d->imageFilename.isEmpty())
-        openImage(d->imageFilename);
+    d->imageFilename = settings.value("Options/recentImageFilename", ":/images/default.jpg").toString();
+    if (!d->imageFilename.isEmpty()) {
+        if (!openImage(d->imageFilename))
+            openImage(":/images/default.jpg");
+    }
     ui->percentageSlider->setValue(settings.value("Options/percent", 70).toInt());
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
@@ -263,13 +266,14 @@ void MainWindow::setImage(const QImage &img)
 }
 
 
-void MainWindow::openImage(const QString &filename)
+bool MainWindow::openImage(const QString &filename)
 {
     Q_D(MainWindow);
     d->image.load(filename);
     if (d->image.isNull())
-        return;
+        return false;
     updateImageWidget();
+    return true;
 }
 
 
@@ -296,7 +300,7 @@ void MainWindow::saveImageAs(void)
 
 void MainWindow::about(void)
 {
-    QMessageBox::about(this, tr("About %1 %2%3").arg(AppName).arg(AppVersionNoDebug).arg(AppMinorVersion),
+    QMessageBox::about(this, tr("About %1 %2%3 (%4)").arg(AppName).arg(AppVersionNoDebug).arg(AppMinorVersion).arg(AppPlatform),
                        tr("<p><b>%1</b> produces a JPG glitch effect in images.\n"
                           "See <a href=\"%2\" title=\"%1 project homepage\">%2</a> for more info.</p>"
                           "<p>Copyright &copy; 2013 %3 &lt;%4&gt;, Heise Zeitschriften Verlag.</p>"

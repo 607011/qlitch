@@ -20,7 +20,11 @@ const QString AppVersion = AppVersionNoDebug + AppMinorVersion;
 #else
 const QString AppVersion = AppVersionNoDebug + AppMinorVersion + " [DEBUG]";
 #endif
-
+#ifdef _M_X64
+const QString AppPlatform = "x64";
+#else
+const QString AppPlatform = "x86";
+#endif
 
 int main(int argc, char *argv[])
 {

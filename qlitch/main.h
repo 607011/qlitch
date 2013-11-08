@@ -14,5 +14,6 @@ extern const QString AppAuthorMail;
 extern const QString AppVersion;
 extern const QString AppMinorVersion;
 extern const QString AppVersionNoDebug;
+extern const QString AppPlatform;
 
 #endif // __MAIN_H_

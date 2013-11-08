@@ -14,6 +14,13 @@ namespace Ui {
 class MainWindow;
 }
 
+enum Algorithm {
+    ALGORITHM_NONE = -1,
+    ALGORITHM_ZERO = 0,
+    ALGORITHM_ONE = 1,
+    ALGORITHM_XOR
+};
+
 class MainWindowPrivate;
 
 class MainWindow : public QMainWindow
@@ -23,13 +30,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = NULL);
     ~MainWindow();
-
-    enum Algorithm {
-        ALGORITHM_NONE = -1,
-        ALGORITHM_ZERO = 0,
-        ALGORITHM_ONE = 1,
-        ALGORITHM_XOR
-    };
 
 private: // methods
     void saveSettings(void);
@@ -47,7 +47,7 @@ protected:
 
 private slots:
     void setImage(const QImage&);
-    void openImage(const QString &filename);
+    bool openImage(const QString &filename);
     void openImage(void);
     void saveImageAs(void);
     void updateImageWidget(void);
