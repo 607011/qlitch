@@ -35,7 +35,7 @@ public:
     MainWindow::Algorithm algorithm;
     QImage image;
     QString imageFilename;
-    int flipBit;
+    quint64 flipBit;
 };
 
 
@@ -144,7 +144,7 @@ void MainWindow::updateImageWidget(void)
     // skip JPEG header (quantization tables, Huffmann tables ...)
     int headerSize = 0;
     for (int i = 0; i < raw.size() - 1; ++i) {
-        if (uchar(raw.at(i)) == 0xffu && uchar(raw.at(i + 1)) == 0xdau) {
+        if (uchar(raw.at(i)) == 0xFFu && uchar(raw.at(i + 1)) == 0xDAu) {
             headerSize = i + 2;
             break;
         }

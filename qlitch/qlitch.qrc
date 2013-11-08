@@ -2,4 +2,7 @@
     <qresource prefix="/">
         <file alias="default.jpg">images/original.jpg</file>
     </qresource>
+    <qresource prefix="/translations">
+        <file>qlitch_de.qm</file>
+    </qresource>
 </RCC>
