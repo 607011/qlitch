@@ -26,3 +26,6 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     qlitch.qrc
+
+OTHER_FILES += \
+    qlitch_de.ts

@@ -48,10 +48,24 @@ ImageWidget::ImageWidget(QWidget *parent)
 }
 
 
+ImageWidget::~ImageWidget()
+{
+    // ...
+}
+
+
 QImage ImageWidget::image(void)
 {
     Q_D(ImageWidget);
     return d->image;
+}
+
+
+void ImageWidget::setBPos(int bPos)
+{
+    Q_D(ImageWidget);
+    d->bPos = bPos;
+    update();
 }
 
 
@@ -83,14 +97,14 @@ void ImageWidget::paintEvent(QPaintEvent*)
         p.drawRect(leftTopBoundingBox);
         p.setBrush(Qt::transparent);
         p.setPen(Qt::white);
-        p.drawText(leftTopTextBox, tr("Click and move cursor to select glitch position\n"));
+        p.drawText(leftTopTextBox, tr("Click and move cursor to select glitch position."));
 
         p.setBrush(QColor(0, 0, 0, 128));
         p.setPen(Qt::transparent);
         p.drawRect(rightTopBoundingBox);
         p.setBrush(Qt::transparent);
         p.setPen(Qt::white);
-        p.drawText(rightTopTextBox, tr("%1%").arg(1e2 * qreal(d->bPos) / d->maxPos, 6, 'g', 3), QTextOption(Qt::AlignRight));
+        p.drawText(rightTopTextBox, tr("Position: %1%").arg(1e2 * d->bPos / d->maxPos, 6, 'g', 3), QTextOption(Qt::AlignRight));
     }
 }
 
@@ -140,7 +154,7 @@ void ImageWidget::dropEvent(QDropEvent *e)
     if (d->hasUrls()) {
         QString fileUrl = d->urls().first().toString();
         if (fileUrl.contains(QRegExp("file://.*\\.(png|jpg|jpeg|gif|ico|mng|tga|tiff?)$")))
-#ifdef WIN32
+#if defined(_WIN32) || defined(_WIN64)
             fileUrl.remove("file:///");
 #else
             fileUrl.remove("file://");
@@ -156,17 +170,13 @@ void ImageWidget::mousePressEvent(QMouseEvent *e)
     if (e->button() == Qt::LeftButton) {
         d->mouseDown = true;
     }
+    e->accept();
 }
 
 
 template <typename T>
-inline T clamp(T x, T a, T b)
-{
-    if (x < a)
-        return a;
-    if (x > b)
-        return b;
-    return x;
+inline T clamp(T x, T a, T b) {
+    return (x < a) ? a : (x > b) ? b : x;
 }
 
 
@@ -179,6 +189,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *e)
         p.setY(clamp(p.y(), 0, d->destRect.height()));
         d->bPos = p.x() + p.y() * d->destRect.width();
         emit positionChanged(d->bPos, d->maxPos);
+        update();
     }
 }
 

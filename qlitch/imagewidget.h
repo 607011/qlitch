@@ -5,12 +5,14 @@
 #define __IMAGEWIDGET_H_
 
 #include <QWidget>
+#include <QImage>
 #include <QByteArray>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
-#include <QImage>
+#include <QResizeEvent>
+#include <QPaintEvent>
 #include <QScopedPointer>
 
 class ImageWidgetPrivate;
@@ -20,10 +22,12 @@ class ImageWidget : public QWidget
     Q_OBJECT
 public:
     explicit ImageWidget(QWidget *parent = NULL);
+    ~ImageWidget();
     QImage image(void);
 
 public slots:
     void setRaw(const QByteArray&);
+    void setBPos(int);
     void showHelp(bool);
 
 signals:

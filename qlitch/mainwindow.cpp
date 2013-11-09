@@ -21,12 +21,10 @@
 
 class MainWindowPrivate {
 public:
-
     explicit MainWindowPrivate(void)
         : algorithm(ALGORITHM_XOR)
         , imageWidget(new ImageWidget)
         , flipBit(0)
-
     { /* ... */ }
     ~MainWindowPrivate()
     {
@@ -155,7 +153,7 @@ void MainWindow::updateImageWidget(void)
             * (ui->percentageSlider->value() - ui->percentageSlider->minimum())
             / (ui->percentageSlider->maximum() - ui->percentageSlider->minimum());
     if (ui->actionSingleBitMode->isChecked()) {
-        uchar bit = 1 << (d->flipBit++ % 8);
+        const uchar bit = 1 << (d->flipBit++ % 8);
         switch (d->algorithm) {
         default:
           // fall-through
@@ -173,8 +171,8 @@ void MainWindow::updateImageWidget(void)
     else {
         const int N = ui->iterationsSlider->value();
         for (int i = 0; i < N; ++i) {
-            int pos = RAND::rnd(firstPos, raw.size());
-            uchar bit = 1 << (RAND::rnd() % 8);
+            const int pos = RAND::rnd(firstPos, raw.size() - 1);
+            const uchar bit = 1 << (RAND::rnd() % 8);
             switch (d->algorithm) {
             default:
               // fall-through

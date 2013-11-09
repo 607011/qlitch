@@ -4,15 +4,23 @@
 <context>
     <name>ImageWidget</name>
     <message>
-        <location filename="imagewidget.cpp" line="86"/>
         <source>Click and move cursor to select glitch position
 </source>
-        <translation>Klicken und Mauszeiger bewegen, um Position für Defekt zu bestimmen</translation>
+        <translation type="obsolete">Klicken und Mauszeiger bewegen, um Position für Defekt zu bestimmen</translation>
     </message>
     <message>
-        <location filename="imagewidget.cpp" line="93"/>
         <source>%1%</source>
-        <translation>%1%</translation>
+        <translation type="obsolete">%1%</translation>
+    </message>
+    <message>
+        <location filename="imagewidget.cpp" line="92"/>
+        <source>Click and move cursor to select glitch position.</source>
+        <translation>Klicken und Mauszeiger bewegen, um Position für Defekt zu bestimmen.</translation>
+    </message>
+    <message>
+        <location filename="imagewidget.cpp" line="99"/>
+        <source>Position: %1%</source>
+        <translation>Position: %1%</translation>
     </message>
 </context>
 <context>
@@ -55,7 +63,7 @@
     <message>
         <location filename="mainwindow.ui" line="117"/>
         <source>Options</source>
-        <translation>&amp;Optionen</translation>
+        <translation>Optionen</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="121"/>
@@ -183,22 +191,26 @@
         <translation>Strg+ß</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="48"/>
         <source>%1 %2</source>
-        <translation>%1 %2</translation>
+        <translation type="obsolete">%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="192"/>
+        <location filename="mainwindow.cpp" line="47"/>
+        <source>%1 %2 (%3)</source>
+        <translation>%1 %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="191"/>
         <source>Resulting image size: %1 bytes</source>
         <translation>JPG-Dateigröße: %1 Bytes</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="235"/>
+        <location filename="mainwindow.cpp" line="234"/>
         <source>Algorithm: %1</source>
         <translation>Algorithmus: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="244"/>
+        <location filename="mainwindow.cpp" line="243"/>
         <source>Image copied to clipboard.</source>
         <translation>Bild in Zwischenablage kopiert.</translation>
     </message>
@@ -214,8 +226,9 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="299"/>
-        <source>About %1 %2%3</source>
-        <translation>Über %1 %2%3</translation>
+        <source>About %1 %2%3 (%4)</source>
+        <oldsource>About %1 %2%3</oldsource>
+        <translation>Über %1 %2%3 (%4)</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="300"/>
