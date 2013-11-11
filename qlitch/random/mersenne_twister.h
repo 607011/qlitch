@@ -4,6 +4,7 @@
 #ifndef __MERSENNETWISTER_H_
 #define __MERSENNETWISTER_H_
 
+#include <QtGlobal>
 #include "abstract_random_number_generator.h"
 
 namespace MT {
@@ -12,17 +13,17 @@ namespace MT {
     {
     public:
         MersenneTwister(void) {}
-        unsigned int operator()();
-        inline unsigned int next(void) { return (*this)(); }
-        void seed(unsigned int _Seed = 9U);
+        quint32 operator()();
+        inline quint32 next(void) { return (*this)(); }
+        void seed(quint32 _Seed = 9U);
 
     private:
         static const int N = 624;
         static const int M = 397;
-        static const unsigned int LO = 0x7fffffffU;
-        static const unsigned int HI = 0x80000000U;
-        static const unsigned int A[2];
-        unsigned int y[N];
+        static const quint32 LO = 0x7fffffffU;
+        static const quint32 HI = 0x80000000U;
+        static const quint32 A[2];
+        quint32 y[N];
         int index;
 
     private: // methods

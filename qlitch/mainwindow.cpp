@@ -17,6 +17,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QKeyEvent>
+#include <QMimeData>
 
 
 class MainWindowPrivate {
@@ -34,7 +35,7 @@ public:
     ImageWidget *imageWidget;
     QImage image;
     QString imageFilename;
-    quint64 flipBit;
+    unsigned int flipBit;
 };
 
 
@@ -90,6 +91,7 @@ void MainWindow::restoreSettings(void)
     ui->percentageSlider->setValue(settings.value("Options/percent", 70).toInt());
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
+    ui->actionPreventFF->setChecked(settings.value("Options/preventFF", true).toBool());
     ui->actionSingleBitMode->setChecked(settings.value("Options/singleBitMode", true).toBool());
     singleBitModeChanged(ui->actionSingleBitMode->isChecked());
     ui->actionShowInlineHelp->setChecked(settings.value("Options/showInlineHelp", true).toBool());
@@ -107,6 +109,7 @@ void MainWindow::saveSettings(void)
     settings.setValue("Options/iterations", ui->iterationsSlider->value());
     settings.setValue("Options/quality", ui->qualitySlider->value());
     settings.setValue("Options/singleBitMode", ui->actionSingleBitMode->isChecked());
+    settings.setValue("Options/preventFF", ui->actionPreventFF->isChecked());
     settings.setValue("Options/showInlineHelp", ui->actionShowInlineHelp->isChecked());
 }
 
@@ -143,7 +146,7 @@ void MainWindow::updateImageWidget(void)
     // skip JPEG header (quantization tables, Huffmann tables ...)
     int headerSize = 0;
     for (int i = 0; i < raw.size() - 1; ++i) {
-        if (uchar(raw.at(i)) == 0xFFu && uchar(raw.at(i + 1)) == 0xDAu) {
+        if (quint8(raw.at(i)) == 0xFFu && quint8(raw.at(i + 1)) == 0xDAu) {
             headerSize = i + 2;
             break;
         }
@@ -152,40 +155,46 @@ void MainWindow::updateImageWidget(void)
             (raw.size() - headerSize)
             * (ui->percentageSlider->value() - ui->percentageSlider->minimum())
             / (ui->percentageSlider->maximum() - ui->percentageSlider->minimum());
+    quint8 newByte = 0;
     if (ui->actionSingleBitMode->isChecked()) {
-        const uchar bit = 1 << (d->flipBit++ % 8);
+        const quint8 oldByte = quint8(raw.at(firstPos));
+        const quint8 bit = 1 << (d->flipBit++ % 8);
         switch (d->algorithm) {
         default:
-          // fall-through
+            // fall-through
         case ALGORITHM_XOR:
-          raw[firstPos] = uchar(raw.at(firstPos)) ^ bit;
-          break;
+            newByte = oldByte ^ bit;
+            break;
         case ALGORITHM_ONE:
-          raw[firstPos] = uchar(raw.at(firstPos)) | bit;
-          break;
+            newByte = oldByte | bit;
+            break;
         case ALGORITHM_ZERO:
-          raw[firstPos] = uchar(raw.at(firstPos)) & ~bit;
-          break;
+            newByte = oldByte & ~bit;
+            break;
         }
+        raw[firstPos] = ((newByte == 0xFFu) && ui->actionPreventFF->isChecked())? oldByte : newByte;
+        qDebug() << quint8(raw[firstPos]);
     }
     else {
         const int N = ui->iterationsSlider->value();
         for (int i = 0; i < N; ++i) {
-            const int pos = RAND::rnd(firstPos, raw.size() - 1);
-            const uchar bit = 1 << (RAND::rnd() % 8);
+            const int pos = RAND::rnd(firstPos, raw.size() - 3);
+            const quint8 oldByte = quint8(raw.at(pos));
+            const quint8 bit = 1 << (RAND::rnd() % 8);
             switch (d->algorithm) {
             default:
-              // fall-through
+                // fall-through
             case ALGORITHM_XOR:
-              raw[pos] = uchar(raw.at(pos)) ^ bit;
-              break;
+                newByte = oldByte ^ bit;
+                break;
             case ALGORITHM_ONE:
-              raw[pos] = uchar(raw.at(pos)) | bit;
-              break;
+                newByte = oldByte | bit;
+                break;
             case ALGORITHM_ZERO:
-              raw[pos] = uchar(raw.at(pos)) & ~bit;
-              break;
+                newByte = oldByte & ~bit;
+                break;
             }
+            raw[pos] = ((newByte == 0xFFu) && ui->actionPreventFF->isChecked())? oldByte : newByte;
         }
     }
     ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(raw.size()), 3000);

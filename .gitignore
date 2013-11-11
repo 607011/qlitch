@@ -9,4 +9,8 @@ qlitch/*.pro.user
 qlitch-Desktop*
 deploy/*
 qlitch/*.qm
-
+glitch.v11.suo
+glitch.vcxproj.filters
+glitch.vcxproj.user
+qlitch/qlitch.pro.user*
+build-qlitch*

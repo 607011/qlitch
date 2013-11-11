@@ -4,7 +4,7 @@
 #ifndef __RND_H_
 #define __RND_H_
 
-#include <QtCore>
+#include <QtGlobal>
 #include "mersenne_twister.h"
 
 
@@ -16,13 +16,13 @@ namespace RAND {
 extern void initialize(void);
 
 
-inline unsigned int rnd(void)
+inline quint32 rnd(void)
 {
     return rng.next();
 }
 
 
-inline unsigned int rnd(int a)
+inline quint32 rnd(int a)
 {
     Q_ASSERT(a != 0);
     return rng.next() % a;
@@ -37,13 +37,13 @@ inline int rnd(int lo, int hi)
 }
 
 
-inline double rnd1(void)
+inline qreal rnd1(void)
 {
-    return (double)RAND::rnd() / rng.max();
+    return (qreal)RAND::rnd() / rng.max();
 }
 
 
-inline double rnd1(qreal a, qreal b)
+inline qreal rnd1(qreal a, qreal b)
 {
     Q_ASSERT(b >= a);
     return a + RAND::rnd1() * (b - a);

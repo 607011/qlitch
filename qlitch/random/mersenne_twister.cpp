@@ -2,14 +2,16 @@
 // Alle Rechte vorbehalten.
 
 #include "mersenne_twister.h"
+#include <QtCore/QDebug>
+#include <QDateTime>
 
 namespace MT {
 
 
-    void MersenneTwister::seed(unsigned int _Seed)
+    void MersenneTwister::seed(quint32 _Seed)
     {
-        unsigned int r = _Seed;
-        unsigned int s = 3402U;
+        quint32 r = _Seed;
+        quint32 s = 3402U;
         for (int i = 0; i < N; ++i) {
             r = 509845221U * r + 3U;
             s *= s + 1U;
@@ -22,15 +24,16 @@ namespace MT {
 
     void MersenneTwister::warmup(void)
     {
-        for (int i = 0; i < 10000; ++i)
+        const int N = 10000 + QDateTime::currentDateTime().time().msec();
+        for (int i = 0; i < N; ++i)
             (*this)();
     }
 
 
-    unsigned int MersenneTwister::operator()()
+    quint32 MersenneTwister::operator()()
     {
         if (index >= N) {
-            unsigned int h;
+            quint32 h;
             for (int k = 0 ; k < N-M ; ++k) {
                 h = (y[k] & HI) | (y[k+1] & LO);
                 y[k] = y[k+M] ^ (h >> 1) ^ A[h & 1];
@@ -44,7 +47,7 @@ namespace MT {
             index = 0;
         }
 
-        unsigned int e = y[index++];
+        quint32 e = y[index++];
         e ^= (e >> 11);
         e ^= (e << 7) & 0x9d2c5680;
         e ^= (e << 15) & 0xefc60000;
@@ -53,5 +56,5 @@ namespace MT {
     }
 
 
-    const unsigned int MersenneTwister::A[2] = { 0, 0x9908b0df };
+    const quint32 MersenneTwister::A[2] = { 0U, 0x9908b0dfU };
 }
