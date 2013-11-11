@@ -13,7 +13,7 @@ const QString AppName = "Qlitch";
 const QString AppUrl = "http://qlitch.googlecode.com/";
 const QString AppAuthor = "Oliver Lau";
 const QString AppAuthorMail = "ola@ct.de";
-const QString AppVersionNoDebug = "1.0";
+const QString AppVersionNoDebug = "1.0.1";
 const QString AppMinorVersion = "";
 #ifdef QT_NO_DEBUG
 const QString AppVersion = AppVersionNoDebug + AppMinorVersion;
