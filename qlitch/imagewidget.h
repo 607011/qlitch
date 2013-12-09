@@ -11,6 +11,7 @@
 #include <QDragLeaveEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
+#include <QWheelEvent>
 #include <QResizeEvent>
 #include <QPaintEvent>
 #include <QScopedPointer>
@@ -44,6 +45,7 @@ protected:
     void mousePressEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
+    void wheelEvent(QWheelEvent*);
 
 private:
     void calcDestRect(void);

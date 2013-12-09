@@ -12,7 +12,7 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <QRect>
-
+#include <QMessageBox>
 
 class ImageWidgetPrivate {
 public:
@@ -97,7 +97,7 @@ void ImageWidget::paintEvent(QPaintEvent*)
         p.drawRect(leftTopBoundingBox);
         p.setBrush(Qt::transparent);
         p.setPen(Qt::white);
-        p.drawText(leftTopTextBox, tr("Click and move cursor to select glitch position."));
+        p.drawText(leftTopTextBox, tr("Click and move cursor to select glitch position. Turn mouse wheel to randomize."));
 
         p.setBrush(QColor(0, 0, 0, 128));
         p.setPen(Qt::transparent);
@@ -112,13 +112,20 @@ void ImageWidget::paintEvent(QPaintEvent*)
 void ImageWidget::setRaw(const QByteArray &raw)
 {
     Q_D(ImageWidget);
-    bool ok = d->image.loadFromData(raw, "JPG");
+    bool ok = false;
+    try {
+        ok = d->image.loadFromData(raw, "JPG");
+    }
+    catch (...) {
+        QMessageBox::warning(NULL, tr("Corrupt JPEG data"),
+                             tr("A critical error occured while decoding the generated JPEG data"));
+    }
     if (!ok) {
         emit refresh();
         return;
     }
     d->image = d->image.convertToFormat(QImage::Format_ARGB32);
-    d->imageAspectRatio = (qreal)d->image.width() / d->image.height();
+    d->imageAspectRatio = qreal(d->image.width()) / d->image.height();
     calcDestRect();
     update();
 }
@@ -169,6 +176,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *e)
     Q_D(ImageWidget);
     if (e->button() == Qt::LeftButton) {
         d->mouseDown = true;
+        update();
     }
     e->accept();
 }
@@ -199,8 +207,16 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *e)
     Q_D(ImageWidget);
     if (e->button() == Qt::LeftButton) {
         d->mouseDown = false;
+        update();
     }
 }
+
+
+void ImageWidget::wheelEvent(QWheelEvent *)
+{
+    emit refresh();
+}
+
 
 void ImageWidget::calcDestRect(void)
 {

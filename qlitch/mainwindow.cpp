@@ -173,7 +173,6 @@ void MainWindow::updateImageWidget(void)
             break;
         }
         raw[firstPos] = ((newByte == 0xFFu) && ui->actionPreventFF->isChecked())? oldByte : newByte;
-        qDebug() << quint8(raw[firstPos]);
     }
     else {
         const int N = ui->iterationsSlider->value();

@@ -7,7 +7,11 @@ TEMPLATE = app
 
 TRANSLATIONS = qlitch_de.ts
 
+CONFIG += exceptions
+
+win32 {
 CONFIG += embed_manifest_exe
+}
 
 SOURCES += main.cpp\
         mainwindow.cpp \
