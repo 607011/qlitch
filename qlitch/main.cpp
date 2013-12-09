@@ -1,38 +1,13 @@
 // Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
 // All rights reserved.
 
-#include "main.h"
 #include "mainwindow.h"
-#include <QApplication>
-#include <QTranslator>
-#include <QLocale>
-#include <QString>
-
-const QString Company = "c't";
-const QString AppName = "Qlitch";
-const QString AppUrl = "http://qlitch.googlecode.com/";
-const QString AppAuthor = "Oliver Lau";
-const QString AppAuthorMail = "ola@ct.de";
-const QString AppVersionNoDebug = "1.0.1";
-const QString AppMinorVersion = "";
-#ifdef QT_NO_DEBUG
-const QString AppVersion = AppVersionNoDebug + AppMinorVersion;
-#else
-const QString AppVersion = AppVersionNoDebug + AppMinorVersion + " [DEBUG]";
-#endif
-#if defined(_M_X64) || defined(_WIN64) || defined(__x86_64__)
-const QString AppPlatform = "x64";
-#else
-const QString AppPlatform = "x86";
-#endif
+#include "qlitchapplication.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    a.setOrganizationName(Company);
-    a.setOrganizationDomain(Company);
-    a.setApplicationName(AppName);
-    a.setApplicationVersion(AppVersionNoDebug);
+    QlitchApplication a(argc, argv);
+
     qApp->addLibraryPath("plugins");
     qApp->addLibraryPath("./plugins");
     qApp->addLibraryPath(".");

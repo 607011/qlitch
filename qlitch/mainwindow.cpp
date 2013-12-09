@@ -1,7 +1,7 @@
 // Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
 // All rights reserved.
 
-#include "main.h"
+#include "qlitchapplication.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "imagewidget.h"
@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     , d_ptr(new MainWindowPrivate)
 {
     ui->setupUi(this);
-    setWindowTitle(tr("%1 %2 (%3)").arg(AppName).arg(AppVersion).arg(AppPlatform));
+    setWindowTitle(tr("%1 %2 (%3)").arg(QlitchApplication::Name).arg(QlitchApplication::Version).arg(QlitchApplication::Platform));
     ui->verticalLayout->addWidget(d_ptr->imageWidget);
     QObject::connect(ui->actionOpenImage, SIGNAL(triggered()), SLOT(openImage()));
     QObject::connect(ui->actionSaveImageAs, SIGNAL(triggered()), SLOT(saveImageAs()));
@@ -82,7 +82,7 @@ MainWindow::~MainWindow()
 void MainWindow::restoreSettings(void)
 {
     Q_D(MainWindow);
-    QSettings settings(Company, AppName);
+    QSettings settings(QlitchApplication::Company, QlitchApplication::Name);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     setAlgorithm((Algorithm)settings.value("Options/algorithm", ALGORITHM_ONE).toInt());
     d->imageFilename = settings.value("Options/recentImageFilename", ":/images/default.jpg").toString();
@@ -101,7 +101,7 @@ void MainWindow::restoreSettings(void)
 void MainWindow::saveSettings(void)
 {
     Q_D(MainWindow);
-    QSettings settings(Company, AppName);
+    QSettings settings(QlitchApplication::Company, QlitchApplication::Name);
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("Options/algorithm", d->algorithm);
     settings.setValue("Options/recentImageFilename", d->imageFilename);
@@ -304,7 +304,7 @@ void MainWindow::saveImageAs(void)
 
 void MainWindow::about(void)
 {
-    QMessageBox::about(this, tr("About %1 %2%3 (%4)").arg(AppName).arg(AppVersionNoDebug).arg(AppMinorVersion).arg(AppPlatform),
+    QMessageBox::about(this, tr("About %1 %2%3 (%4)").arg(QlitchApplication::Name).arg(QlitchApplication::VersionNoDebug).arg(QlitchApplication::MinorVersion).arg(QlitchApplication::Platform),
                        tr("<p><b>%1</b> produces a JPG glitch effect in images.\n"
                           "See <a href=\"%2\" title=\"%1 project homepage\">%2</a> for more info.</p>"
                           "<p>Copyright &copy; 2013 %3 &lt;%4&gt;, Heise Zeitschriften Verlag.</p>"
@@ -319,7 +319,7 @@ void MainWindow::about(void)
                           "You should have received a copy of the GNU General Public License "
                           "along with this program. "
                           "If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0\">http://www.gnu.org/licenses</a>.</p>")
-                       .arg(AppName).arg(AppUrl).arg(AppAuthor).arg(AppAuthorMail));
+                       .arg(QlitchApplication::Name).arg(QlitchApplication::Url).arg(QlitchApplication::Author).arg(QlitchApplication::AuthorMail));
 }
 
 

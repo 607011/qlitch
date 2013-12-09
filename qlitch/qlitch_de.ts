@@ -14,13 +14,24 @@
     </message>
     <message>
         <location filename="imagewidget.cpp" line="100"/>
-        <source>Click and move cursor to select glitch position.</source>
-        <translation>Klicken und Mauszeiger bewegen, um Position für ersten Defekt zu bestimmen.</translation>
+        <source>Click and move cursor to select glitch position. Turn mouse wheel to randomize.</source>
+        <oldsource>Click and move cursor to select glitch position.</oldsource>
+        <translation>Klicken und Mauszeiger bewegen, um Position für ersten Defekt zu bestimmen. Mausrad aktualisiert Bild mit neuen Zufallswerten.</translation>
     </message>
     <message>
         <location filename="imagewidget.cpp" line="107"/>
         <source>Position: %1%</source>
         <translation>Position: %1%</translation>
+    </message>
+    <message>
+        <location filename="imagewidget.cpp" line="120"/>
+        <source>Corrupt JPEG data</source>
+        <translation>Kaputte JPEG-Bilddaten</translation>
+    </message>
+    <message>
+        <location filename="imagewidget.cpp" line="121"/>
+        <source>A critical error occured while decoding the generated JPEG data</source>
+        <translation>Das Dekodieren der JPEG-Bilddaten ist fehlgeschlagen</translation>
     </message>
 </context>
 <context>
