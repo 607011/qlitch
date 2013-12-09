@@ -5,7 +5,7 @@
 #include <QtCore/QDebug>
 
 
-QlitchApplication::QlitchApplication(int &argc, char **argv)
+QlitchApplication::QlitchApplication(int &argc, char *argv[])
     : QApplication(argc, argv)
 {
     setOrganizationName(Company);
@@ -35,7 +35,7 @@ const QString QlitchApplication::Name = "Qlitch";
 const QString QlitchApplication::Url = "http://qlitch.googlecode.com/";
 const QString QlitchApplication::Author = "Oliver Lau";
 const QString QlitchApplication::AuthorMail = "ola@ct.de";
-const QString QlitchApplication::VersionNoDebug = "1.0.1";
+const QString QlitchApplication::VersionNoDebug = "1.0.2";
 const QString QlitchApplication::MinorVersion = "";
 #ifdef QT_NO_DEBUG
 const QString QlitchApplication::Version = QlitchApplication::VersionNoDebug + QlitchApplication::MinorVersion;

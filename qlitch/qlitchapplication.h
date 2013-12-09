@@ -14,7 +14,7 @@
 class QlitchApplication : public QApplication
 {
 public:
-    explicit QlitchApplication(int &argc, char **argv);
+    explicit QlitchApplication(int &argc, char *argv[]);
     virtual ~QlitchApplication();
     virtual bool notify(QObject *receiver, QEvent*);
 
