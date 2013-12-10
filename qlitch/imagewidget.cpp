@@ -117,8 +117,7 @@ void ImageWidget::setRaw(const QByteArray &raw)
         ok = d->image.loadFromData(raw, "JPG");
     }
     catch (...) {
-        QMessageBox::warning(NULL, tr("Corrupt JPEG data"),
-                             tr("A critical error occured while decoding the generated JPEG data"));
+        QMessageBox::warning(NULL, tr("Corrupt JPEG data"), tr("A critical error occured while decoding the generated JPEG data"));
     }
     if (!ok) {
         emit refresh();

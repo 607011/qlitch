@@ -2,8 +2,6 @@
 // Alle Rechte vorbehalten.
 
 #include "mersenne_twister.h"
-#include <QtCore/QDebug>
-#include <QDateTime>
 
 namespace MT {
 
@@ -24,8 +22,7 @@ namespace MT {
 
     void MersenneTwister::warmup(void)
     {
-        const int N = 10000 + QDateTime::currentDateTime().time().msec();
-        for (int i = 0; i < N; ++i)
+        for (int i = 0; i < 10000; ++i)
             (*this)();
     }
 

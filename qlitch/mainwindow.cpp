@@ -54,9 +54,12 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
     QObject::connect(ui->actionCopyImageToClipboard, SIGNAL(triggered()), SLOT(copyToClipboard()));
     QObject::connect(ui->actionPasteImageFromClipboard, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
+    QObject::connect(ui->actionFixedSeed, SIGNAL(toggled(bool)), ui->seedSlider, SLOT(setEnabled(bool)));
+    QObject::connect(ui->actionFixedSeed, SIGNAL(triggered()), SLOT(updateImageWidget()));
     QObject::connect(ui->qualitySlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->percentageSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(ui->iterationsSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
+    QObject::connect(ui->seedSlider, SIGNAL(valueChanged(int)), SLOT(updateImageWidget()));
     QObject::connect(d_ptr->imageWidget, SIGNAL(imageDropped(QImage)), SLOT(setImage(QImage)));
     QObject::connect(d_ptr->imageWidget, SIGNAL(refresh()), SLOT(updateImageWidget()));
     QObject::connect(d_ptr->imageWidget, SIGNAL(positionChanged(int,int)), SLOT(positionChanged(int,int)));
@@ -92,9 +95,10 @@ void MainWindow::restoreSettings(void)
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
     ui->actionPreventFF->setChecked(settings.value("Options/preventFF", true).toBool());
-    ui->actionSingleBitMode->setChecked(settings.value("Options/singleBitMode", true).toBool());
+    ui->actionSingleBitMode->setChecked(settings.value("Options/singleBitMode", false).toBool());
     singleBitModeChanged(ui->actionSingleBitMode->isChecked());
     ui->actionShowInlineHelp->setChecked(settings.value("Options/showInlineHelp", true).toBool());
+    ui->actionFixedSeed->setChecked(settings.value("Options/fixedSeed", false).toBool());
 }
 
 
@@ -111,6 +115,7 @@ void MainWindow::saveSettings(void)
     settings.setValue("Options/singleBitMode", ui->actionSingleBitMode->isChecked());
     settings.setValue("Options/preventFF", ui->actionPreventFF->isChecked());
     settings.setValue("Options/showInlineHelp", ui->actionShowInlineHelp->isChecked());
+    settings.setValue("Options/fixedSeed", ui->actionFixedSeed->isChecked());
 }
 
 
@@ -139,6 +144,8 @@ void MainWindow::updateImageWidget(void)
     Q_D(MainWindow);
     if (d->image.isNull())
         return;
+    if (ui->actionFixedSeed->isChecked())
+        rng.seed(ui->seedSlider->value());
     QByteArray raw;
     QBuffer buffer(&raw);
     buffer.open(QIODevice::WriteOnly);

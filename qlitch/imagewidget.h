@@ -23,7 +23,7 @@ class ImageWidget : public QWidget
     Q_OBJECT
 public:
     explicit ImageWidget(QWidget *parent = NULL);
-    ~ImageWidget();
+    virtual ~ImageWidget();
     QImage image(void);
 
 public slots:

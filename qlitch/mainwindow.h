@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = NULL);
-    ~MainWindow();
+    virtual ~MainWindow();
 
 private: // methods
     void saveSettings(void);
