@@ -72,7 +72,7 @@ void ImageWidget::setBPos(int bPos)
 void ImageWidget::resizeEvent(QResizeEvent* e)
 {
     Q_D(ImageWidget);
-    d->windowAspectRatio = (qreal)e->size().width() / e->size().height();
+    d->windowAspectRatio = qreal(e->size().width()) / e->size().height();
     calcDestRect();
 }
 

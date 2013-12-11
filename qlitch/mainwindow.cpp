@@ -95,6 +95,8 @@ void MainWindow::restoreSettings(void)
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
     ui->actionPreventFF->setChecked(settings.value("Options/preventFF", true).toBool());
+    ui->seedSlider->setEnabled(ui->actionPreventFF->isChecked());
+    ui->actionLeaveFFUntouched->setChecked(settings.value("Options/dontTouchFF", true).toBool());
     ui->actionSingleBitMode->setChecked(settings.value("Options/singleBitMode", false).toBool());
     singleBitModeChanged(ui->actionSingleBitMode->isChecked());
     ui->actionShowInlineHelp->setChecked(settings.value("Options/showInlineHelp", true).toBool());
@@ -114,6 +116,7 @@ void MainWindow::saveSettings(void)
     settings.setValue("Options/quality", ui->qualitySlider->value());
     settings.setValue("Options/singleBitMode", ui->actionSingleBitMode->isChecked());
     settings.setValue("Options/preventFF", ui->actionPreventFF->isChecked());
+    settings.setValue("Options/dontTouchFF", ui->actionLeaveFFUntouched->isChecked());
     settings.setValue("Options/showInlineHelp", ui->actionShowInlineHelp->isChecked());
     settings.setValue("Options/fixedSeed", ui->actionFixedSeed->isChecked());
 }
@@ -186,6 +189,8 @@ void MainWindow::updateImageWidget(void)
         for (int i = 0; i < N; ++i) {
             const int pos = RAND::rnd(firstPos, raw.size() - 3);
             const quint8 oldByte = quint8(raw.at(pos));
+            if (ui->actionLeaveFFUntouched->isChecked() && oldByte == 0xFFu)
+                continue;
             const quint8 bit = 1 << (RAND::rnd() % 8);
             switch (d->algorithm) {
             default:

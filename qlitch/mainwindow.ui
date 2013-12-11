@@ -148,9 +148,10 @@
      <addaction name="actionXOR"/>
     </widget>
     <addaction name="menuAlgorithm"/>
-    <addaction name="actionSingleBitMode"/>
-    <addaction name="actionPreventFF"/>
     <addaction name="actionFixedSeed"/>
+    <addaction name="actionSingleBitMode"/>
+    <addaction name="actionLeaveFFUntouched"/>
+    <addaction name="actionPreventFF"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -325,13 +326,24 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Fixed seed</string>
    </property>
    <property name="toolTip">
     <string>Seed random number generator with fixed value</string>
+   </property>
+  </action>
+  <action name="actionLeaveFFUntouched">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Leave 0xFF bytes untouched</string>
    </property>
   </action>
  </widget>

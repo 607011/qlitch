@@ -16,7 +16,7 @@ class QlitchApplication : public QApplication
 public:
     explicit QlitchApplication(int &argc, char *argv[]);
     virtual ~QlitchApplication();
-    virtual bool notify(QObject *receiver, QEvent*);
+    virtual bool notify(QObject*, QEvent*);
 
 public:
     static const QString Company;
