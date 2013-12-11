@@ -1,0 +1,4 @@
+FEATURES
+========
+
+ * Webcam-Bild in Echtzeit glitchen

@@ -112,21 +112,16 @@ void ImageWidget::paintEvent(QPaintEvent*)
 void ImageWidget::setRaw(const QByteArray &raw)
 {
     Q_D(ImageWidget);
-    bool ok = false;
-    try {
-        ok = d->image.loadFromData(raw, "JPG");
+    bool ok = d->image.loadFromData(raw, "JPG");
+    if (ok) {
+        d->image = d->image.convertToFormat(QImage::Format_ARGB32);
+        d->imageAspectRatio = qreal(d->image.width()) / d->image.height();
+        calcDestRect();
+        update();
     }
-    catch (...) {
-        QMessageBox::warning(NULL, tr("Corrupt JPEG data"), tr("A critical error occured while decoding the generated JPEG data"));
+    else {
+        emit invalidJPGData();
     }
-    if (!ok) {
-        emit refresh();
-        return;
-    }
-    d->image = d->image.convertToFormat(QImage::Format_ARGB32);
-    d->imageAspectRatio = qreal(d->image.width()) / d->image.height();
-    calcDestRect();
-    update();
 }
 
 

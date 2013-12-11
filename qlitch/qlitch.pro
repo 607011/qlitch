@@ -33,4 +33,5 @@ RESOURCES += \
     qlitch.qrc
 
 OTHER_FILES += \
-    qlitch_de.ts
+    qlitch_de.ts \
+    TODO.txt

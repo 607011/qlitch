@@ -19,17 +19,6 @@ QlitchApplication::~QlitchApplication()
 { /* ... */ }
 
 
-bool QlitchApplication::notify(QObject *receiver, QEvent *event) {
-    try {
-        return QApplication::notify(receiver, event);
-    }
-    catch (std::exception& e) {
-        qCritical() << "Exception thrown:" << e.what();
-    }
-    return false;
-}
-
-
 const QString QlitchApplication::Company = "c't";
 const QString QlitchApplication::Name = "Qlitch";
 const QString QlitchApplication::Url = "http://qlitch.googlecode.com/";
