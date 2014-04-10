@@ -24,14 +24,12 @@
         <translation>Position: %1%</translation>
     </message>
     <message>
-        <location filename="imagewidget.cpp" line="120"/>
         <source>Corrupt JPEG data</source>
-        <translation>Kaputte JPEG-Bilddaten</translation>
+        <translation type="obsolete">Kaputte JPEG-Bilddaten</translation>
     </message>
     <message>
-        <location filename="imagewidget.cpp" line="120"/>
         <source>A critical error occured while decoding the generated JPEG data</source>
-        <translation>Das Dekodieren der JPEG-Bilddaten ist fehlgeschlagen</translation>
+        <translation type="obsolete">Das Dekodieren der JPEG-Bilddaten ist fehlgeschlagen</translation>
     </message>
 </context>
 <context>
@@ -234,50 +232,50 @@
     <message>
         <location filename="mainwindow.ui" line="346"/>
         <source>Leave 0xFF bytes untouched</source>
-        <translation type="unfinished"></translation>
+        <translation>0xFF nicht verändern</translation>
     </message>
     <message>
         <source>%1 %2</source>
         <translation type="obsolete">%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="48"/>
+        <location filename="mainwindow.cpp" line="52"/>
         <source>%1 %2 (%3)</source>
         <translation>%1 %2 (%3)</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="206"/>
+        <location filename="mainwindow.cpp" line="217"/>
         <source>Resulting image size: %1 bytes</source>
         <translation>JPG-Dateigröße: %1 Bytes</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="249"/>
+        <location filename="mainwindow.cpp" line="266"/>
         <source>Algorithm: %1</source>
         <translation>Algorithmus: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="258"/>
+        <location filename="mainwindow.cpp" line="275"/>
         <source>Image copied to clipboard.</source>
         <translation>Bild in Zwischenablage kopiert.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="294"/>
+        <location filename="mainwindow.cpp" line="311"/>
         <source>Open image ...</source>
         <translation>Bild öffnen ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="305"/>
+        <location filename="mainwindow.cpp" line="322"/>
         <source>Save image as ...</source>
         <translation>Bild speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="314"/>
+        <location filename="mainwindow.cpp" line="331"/>
         <source>About %1 %2%3 (%4)</source>
         <oldsource>About %1 %2%3</oldsource>
         <translation>Über %1 %2%3 (%4)</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="315"/>
+        <location filename="mainwindow.cpp" line="332"/>
         <source>&lt;p&gt;&lt;b&gt;%1&lt;/b&gt; produces a JPG glitch effect in images.
 See &lt;a href=&quot;%2&quot; title=&quot;%1 project homepage&quot;&gt;%2&lt;/a&gt; for more info.&lt;/p&gt;&lt;p&gt;Copyright &amp;copy; 2013 %3 &amp;lt;%4&amp;gt;, Heise Zeitschriften Verlag.&lt;/p&gt;&lt;p&gt;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;You should have received a copy of the GNU General Public License along with this program. If not, see &lt;a href=&quot;http://www.gnu.org/licenses/gpl-3.0&quot;&gt;http://www.gnu.org/licenses&lt;/a&gt;.&lt;/p&gt;</source>
         <translation>&lt;p&gt;&lt;b&gt;%1&lt;/b&gt; erzeugt JPG-Glitch-Effekte in Bilddateien. Siehe &lt;a href=&quot;%2&quot; title=&quot;%1 project homepage&quot;&gt;%2&lt;/a&gt; für mehr Informationen.&lt;/p&gt;&lt;p&gt;Copyright &amp;copy; 2013 %3 &amp;lt;%4&amp;gt;, Heise Zeitschriften Verlag.&lt;/p&gt;

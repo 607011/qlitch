@@ -27,7 +27,7 @@ public:
     QImage image(void);
 
 public slots:
-    void setRaw(const QByteArray&);
+    bool setRaw(const QByteArray&);
     void setBPos(int);
     void showHelp(bool);
 

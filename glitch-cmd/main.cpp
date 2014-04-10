@@ -87,7 +87,7 @@ double random(double x, double y) {
 
 void disclaimer() {
   printf("glitch - Produce glitch effect in a JPG file.\n"
-    "Copyright (c) 2013 Oliver Lau <oliver@ersatzworld.net>\n"
+    "Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag.\n"
     "All rights reserved.\n\n");
 }
 

@@ -109,19 +109,18 @@ void ImageWidget::paintEvent(QPaintEvent*)
 }
 
 
-void ImageWidget::setRaw(const QByteArray &raw)
+bool ImageWidget::setRaw(const QByteArray &raw)
 {
     Q_D(ImageWidget);
-    bool ok = d->image.loadFromData(raw, "JPG");
+    QImage image;
+    bool ok = image.loadFromData(raw, "JPG");
     if (ok) {
-        d->image = d->image.convertToFormat(QImage::Format_ARGB32);
+        d->image = image.convertToFormat(QImage::Format_ARGB32);
         d->imageAspectRatio = qreal(d->image.width()) / d->image.height();
         calcDestRect();
-        update();
     }
-    else {
-        emit invalidJPGData();
-    }
+    update();
+    return ok;
 }
 
 

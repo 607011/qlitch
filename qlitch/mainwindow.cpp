@@ -36,6 +36,10 @@ public:
     QImage image;
     QString imageFilename;
     unsigned int flipBit;
+    int prevQuality;
+    int prevSeed;
+    int prevPercentage;
+    int prevIterations;
 };
 
 
@@ -85,14 +89,16 @@ MainWindow::~MainWindow()
 void MainWindow::restoreSettings(void)
 {
     Q_D(MainWindow);
+    static const QString DEFAULT_IMAGE = ":/images/default.jpg";
     QSettings settings(QlitchApplication::Company, QlitchApplication::Name);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     setAlgorithm((Algorithm)settings.value("Options/algorithm", ALGORITHM_ONE).toInt());
-    d->imageFilename = settings.value("Options/recentImageFilename", ":/images/default.jpg").toString();
+    d->imageFilename = settings.value("Options/recentImageFilename", DEFAULT_IMAGE).toString();
     if (!openImage(d->imageFilename))
-        openImage(":/images/default.jpg");
-    ui->percentageSlider->setValue(settings.value("Options/percent", 70).toInt());
+        openImage(DEFAULT_IMAGE);
+    ui->percentageSlider->setValue(settings.value("Options/percentage", 70).toInt());
     ui->iterationsSlider->setValue(settings.value("Options/iterations", 2).toInt());
+    ui->seedSlider->setValue(settings.value("Options/seed", 1).toInt());
     ui->qualitySlider->setValue(settings.value("Options/quality", 50).toInt());
     ui->actionPreventFF->setChecked(settings.value("Options/preventFF", true).toBool());
     ui->seedSlider->setEnabled(ui->actionPreventFF->isChecked());
@@ -111,9 +117,10 @@ void MainWindow::saveSettings(void)
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("Options/algorithm", d->algorithm);
     settings.setValue("Options/recentImageFilename", d->imageFilename);
-    settings.setValue("Options/percent", ui->percentageSlider->value());
-    settings.setValue("Options/iterations", ui->iterationsSlider->value());
-    settings.setValue("Options/quality", ui->qualitySlider->value());
+    settings.setValue("Options/percentage", d->prevPercentage);
+    settings.setValue("Options/iterations", d->prevIterations);
+    settings.setValue("Options/quality", d->prevQuality);
+    settings.setValue("Options/seed", d->prevSeed);
     settings.setValue("Options/singleBitMode", ui->actionSingleBitMode->isChecked());
     settings.setValue("Options/preventFF", ui->actionPreventFF->isChecked());
     settings.setValue("Options/dontTouchFF", ui->actionLeaveFFUntouched->isChecked());
@@ -210,7 +217,13 @@ void MainWindow::updateImageWidget(void)
     }
     ui->statusBar->showMessage(tr("Resulting image size: %1 bytes").arg(raw.size()), 3000);
     buffer.close();
-    d->imageWidget->setRaw(raw);
+    bool ok = d->imageWidget->setRaw(raw);
+    if (ok) {
+        d->prevIterations = ui->iterationsSlider->value();
+        d->prevPercentage = ui->percentageSlider->value();
+        d->prevQuality = ui->qualitySlider->value();
+        d->prevSeed = ui->seedSlider->value();
+    }
 }
 
 
