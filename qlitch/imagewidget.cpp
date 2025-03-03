@@ -1,6 +1,3 @@
-// Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
-// All rights reserved.
-
 #include "imagewidget.h"
 
 #include <QtCore/QDebug>
@@ -13,6 +10,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 class ImageWidgetPrivate {
 public:
@@ -135,7 +133,7 @@ void ImageWidget::showHelp(bool enabled)
 void ImageWidget::dragEnterEvent(QDragEnterEvent *e)
 {
     const QMimeData* const d = e->mimeData();
-    if (d->hasUrls() && d->urls().first().toString().contains(QRegExp("\\.(png|jpg|gif|ico|mng|tga|tiff?)$")))
+    if (d->hasUrls() && d->urls().first().toString().contains(QRegularExpression("\\.(png|jpg|gif|ico|mng|tga|tiff?)$")))
         e->acceptProposedAction();
     else
         e->ignore();
@@ -153,7 +151,7 @@ void ImageWidget::dropEvent(QDropEvent *e)
     const QMimeData *const d = e->mimeData();
     if (d->hasUrls()) {
         QString fileUrl = d->urls().first().toString();
-        if (fileUrl.contains(QRegExp("file://.*\\.(png|jpg|jpeg|gif|ico|mng|tga|tiff?)$")))
+        if (fileUrl.contains(QRegularExpression("file://.*\\.(png|jpg|jpeg|gif|ico|mng|tga|tiff?)$")))
 #if defined(_WIN32) || defined(_WIN64)
             fileUrl.remove("file:///");
 #else

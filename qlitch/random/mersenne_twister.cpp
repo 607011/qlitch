@@ -1,6 +1,3 @@
-// Copyright (c) 2008-2012 Oliver Lau <oliver@von-und-fuer-lau.de>
-// Alle Rechte vorbehalten.
-
 #include "mersenne_twister.h"
 
 namespace MT {

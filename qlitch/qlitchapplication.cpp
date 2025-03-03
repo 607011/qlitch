@@ -1,6 +1,3 @@
-// Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
-// All rights reserved.
-
 #include "qlitchapplication.h"
 #include <QtCore/QDebug>
 
@@ -21,7 +18,7 @@ QlitchApplication::~QlitchApplication()
 
 const QString QlitchApplication::Company = "c't";
 const QString QlitchApplication::Name = "Qlitch";
-const QString QlitchApplication::Url = "http://qlitch.googlecode.com/";
+const QString QlitchApplication::Url = "https://github.com/607011/qlitch";
 const QString QlitchApplication::Author = "Oliver Lau";
 const QString QlitchApplication::AuthorMail = "ola@ct.de";
 const QString QlitchApplication::VersionNoDebug = "1.0.2";

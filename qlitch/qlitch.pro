@@ -13,8 +13,10 @@ win32 {
 CONFIG += embed_manifest_exe
 }
 
+QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
+
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     imagewidget.cpp \
     random/rnd.cpp \
     random/mersenne_twister.cpp \
@@ -27,11 +29,10 @@ HEADERS  += mainwindow.h \
     random/abstract_random_number_generator.h \
     qlitchapplication.h
 
-FORMS    += mainwindow.ui
+FORMS += mainwindow.ui
 
 RESOURCES += \
     qlitch.qrc
 
 OTHER_FILES += \
-    qlitch_de.ts \
-    TODO.txt
+    qlitch_de.ts

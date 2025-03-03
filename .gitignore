@@ -1,3 +1,4 @@
+.DS_Store
 glitch-cmd/*.opensdf
 glitch-cmd/*.sdf
 glitch-cmd/*.suo
