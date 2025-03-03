@@ -1,7 +1,8 @@
 # JPG  ̶̡̛͕̜̩̝̣͉̪̖͇̼͇̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̓̅͛̑̒͆̿̀ͨ̂ͩͅͅ⃝͐̓͌͆ͯ̈́̓̂ͭ͌̄ͭͥ̄̾̈́̓̊҉͚̺̲͇̗͓͖͙̩̩̪̖̳͟ͅ ̡̛̣͍͕̜̩̝̣͉̪̖͇̼͇̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̓̅͛̑̒ ̿̿̿̿̿̿̿ ̿̿̿̿̿̿̿̿̿̿̿ ̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿Glῑtch̿̿̿̿̿̿̿̿̿̿̿̿ ̶̶̡̛͕̜̩̝̣͉̪̖͇̼͇̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̓̅͛̑̒̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿ ̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿ ̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿̿ Effect
 
 <img src="https://lh6.googleusercontent.com/-NrX7RZT4OXg/U0ZmmEzvAQI/AAAAAAAAIp4/Bt-sLyJe8xE/w512-h377-no/glitch-anim.gif" alt="https://lh6.googleusercontent.com/-NrX7RZT4OXg/U0ZmmEzvAQI/AAAAAAAAIp4/Bt-sLyJe8xE/w512-h377-no/glitch-anim.gif" title="">
-▓ _Originalbild_: [freeimages.co.uk](http://www.freeimages.co.uk/) ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+
+▓ *Originalbild*: [freeimages.co.uk](http://www.freeimages.co.uk/) ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 
 ```c
 for (int i = 0; i a N; ++i) {
