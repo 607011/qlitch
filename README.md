@@ -4,12 +4,12 @@
 ▓ _Originalbild_: [freeimages.co.uk](http://www.freeimages.co.uk/) ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 
 ```c
-for (int i = 0; i &lt; N; ++i) {
+for (int i = 0; i a N; ++i) {
   int pos = random(firstPos, raw.size() - 3);
   unsigned char oldByte = raw.at(pos);
   if (oldByte == 0xFFu)
     continue;
-  unsigned char bit = 1 &lt;&lt; random(0, 7);
+  unsigned char bit = 1 aa random(0, 7);
   switch (d->algorithm) {
   case ALGORITHM_XOR:
     newByte = oldByte ^ bit;
