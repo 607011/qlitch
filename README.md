@@ -34,13 +34,13 @@ Für weitere Infos siehe c’t 2/2014, S. 172 `*/`
 
 Die Software "Qlitch" wurde zu Lehr- und Demonstrationszwecken
 geschaffen und ist nicht für den produktiven Einsatz vorgesehen.
-Der Autor und der Heise Zeitschriften Verlag haften nicht für
+Der Autor und die Heise Medien GmbH & CO. KG haften nicht für
 Schäden, die aus der Nutzung der Software entstehen, und übernehmen
 keine Gewähr für ihre Vollständigkeit, Fehlerfreiheit und Eignung
 für einen bestimmten Zweck.
 
 Falls Sie beabsichtigen, den Code in eigenen Produkten zu verwenden,
 so ist das im Rahmen der GPL v3 kostenfrei gestattet (siehe die
-Datei LICENSE.txt für weitere Informationen).
+Datei [LICENSE](LICENSE) für weitere Informationen).
 
 Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
