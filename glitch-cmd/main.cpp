@@ -1,6 +1,6 @@
 /// glitch - Produce glitch effect in a JPG file.
 /// 
-/// Copyright (c) 2013 Oliver Lau <oliver@von-und-fuer-lau.de>.
+/// Copyright (c) 2013 Oliver Lau <ola@ct.de>.
 /// All rights reserved.
 
 #ifndef WIN32
@@ -87,7 +87,7 @@ double random(double x, double y) {
 
 void disclaimer() {
   printf("glitch - Produce glitch effect in a JPG file.\n"
-    "Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag.\n"
+    "Copyright (c) 2013 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG\n"
     "All rights reserved.\n\n");
 }
 
